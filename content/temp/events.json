@@ -1,0 +1,40 @@
+[
+    {
+        "Styrian GP": {
+            "name": "Styrian GP",
+            "month": "Aug",
+            "dateBracket": "27-29",
+            "schedule": {
+                "Friday": {
+                    "day": "Friday",
+                    "content": {
+                        "header": "Calibration Day",
+                        "subheader": "Calibration",
+                        "timings": "16:00-00:00"
+                    }
+                },
+                "Saturday": {
+                    "day": "Saturday",
+                    "content": {
+                        "header": "FP & Qual",
+                        "subheader": "Free Practice",
+                        "timings": "15:00-18:00"
+                    },
+                    "content2": {
+                        "header": "Qualification",
+                        "subheader": "Qualification",
+                        "timings": "19:00-20:00"
+                    }
+                },
+                "Sunday": {
+                    "day": "Sunday",
+                    "content": {
+                        "header": "Race Sunday",
+                        "subheader": "Race Sunday",
+                        "timings": "15:00-17:00"
+                    }
+                }
+            }
+        }
+    }
+]

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="style2.css" />
+</head>
+
+<body>
+
+    <button class="topBtnClose" id="btnClose">&#10006;</button>
+    <button class="topBtnMin" id="btnMin">&#8722;</button>
+
+    <div class="top">
+        <div class="menuContainer" onclick="menuFold(this)">
+            <div class="bar1"></div>
+            <div class="bar2"></div>
+            <div class="bar3"></div>
+        </div>
+
+        <div class="titleContainer">
+            <img id="headerIcon" src='src/images/headericon.svg'>
+            <div class="titleSub">ECHELON</div>
+        </div>
+
+        <div id="userContainer" class="userContainer">
+            <img id="userIcon" src="src/images/defaultUserProfile.svg">
+            <div class="usernameText">Not Signed In</div>
+        </div>
+    </div>
+
+    <div class="mid">
+
+        <div class="parent">
+
+            <div class="columnTopLeft unselectable">
+
+                <!-- Background -->
+                <svg id="webkitDrag" height="320px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+                    <defs>
+                        <style>
+                            .topleftcls-1 {
+                                isolation: isolate;
+                            }
+
+                            .topleftcls-2 {
+                                fill: rgba(211, 209, 192, .1);
+                                mix-blend-mode: overlay;
+                            }
+                        </style>
+                    </defs>
+                    <g class="topleftcls-1">
+                        <g id="Layer_2" data-name="Layer 2">
+                            <g id="Header">
+                                <rect class="topleftcls-2" width="320" height="320" rx="5" />
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+
+                <div id="contentTL" class="contentTopLeft">
+                    <div class="cellHead globalFont">Syncronise</div>
+
+                    <div class="syncContainer">
+
+                        <!-- Go button base -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 202.5 193.27" onclick="btnGo(this)" id="btnGo">
+                            <defs>
+                                <style>
+                                    .gobuttoncls-1 {
+                                        fill: #001b1e;
+                                    }
+                                </style>
+                            </defs>
+                            <g id="Layer_2" data-name="Layer 2">
+                                <g id="Header">
+                                    <polygon class="gobuttoncls-1" points="0 0 0 193.27 112.18 193.27 202.5 0 0 0" />
+                                </g>
+                            </g>
+                        </svg>
+
+                        <!-- Stop button base -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 124.42 193.27" onclick="btnStop(this)" id="btnStop">
+                            <defs>
+                                <style>
+                                    .stopbuttoncls-2 {
+                                        fill: #fddb00;
+                                    }
+                                </style>
+                            </defs>
+                            <g id="Layer_3" data-name="Layer 3">
+                                <g id="Header">
+                                    <polygon class="stopbuttoncls-2" points="124.42 0 90.31 0 0 193.27 124.42 193.27 124.42 0" />
+                                </g>
+                            </g>
+                        </svg>
+
+                        <!-- Go button overlay -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88.96 61.51" onclick="btnGo(this)" id="btnGoTop">
+                            <defs>
+                                <style>
+                                    .gobuttonoverlaycls-1,
+                                    .gobuttonoverlaycls-2,
+                                    .gobuttonoverlaycls-3 {
+                                        fill: #fff;
+                                    }
+
+                                    .gobuttonoverlaycls-2 {
+                                        opacity: 0.8;
+                                    }
+
+                                    .gobuttonoverlaycls-3 {
+                                        opacity: 0.5;
+                                    }
+                                </style>
+                            </defs>
+                            <g id="Layer_2" data-name="Layer 2">
+                                <g id="Header">
+                                    <polygon class="gobuttonoverlaycls-1"
+                                        points="73.58 61.51 55.07 61.51 70.45 30.75 55.07 0 73.58 0 88.96 30.75 73.58 61.51" />
+                                    <polygon class="gobuttonoverlaycls-2"
+                                        points="46.05 61.51 27.54 61.51 42.91 30.75 27.54 0 46.05 0 61.42 30.75 46.05 61.51" />
+                                    <polygon class="gobuttonoverlaycls-3"
+                                        points="18.51 61.51 0 61.51 15.38 30.75 0 0 18.51 0 33.89 30.75 18.51 61.51" />
+                                </g>
+                            </g>
+                        </svg>
+
+                        <!-- Stop button overlay -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.19 29.6" onclick="btnStop(this)" id="btnStopTop">
+                            <defs>
+                                <style>
+                                    .stopbuttonoverlaycls-1 {
+                                        fill: #fff;
+                                        opacity: 0.49;
+                                    }
+                                </style>
+                            </defs>
+                            <g id="Layer_2" data-name="Layer 2">
+                                <g id="Header">
+                                    <path class="stopbuttonoverlaycls-1" d="M29.19,0V29.6H0V0Z" />
+                                </g>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <img id="settingsCogSync" onclick="settingsSyncFold()" src="src/images/settingsCogLight.png">
+
+                    <div id="demoText">10MB/s</div>
+
+                    <div id="demoTextContainer">
+                        <div id="demoText2"></div>
+                    </div>
+                    
+                </div>
+
+                <!-- Settings panel -->
+                <div id="subContentTL" class="subContentTopLeft">
+                    <div class="cellHead globalFont">Settings</div>
+                    <button class="syncSettingsExitIcon" onclick="settingsSyncFlip()">&#10006;</button>
+
+                    <button class="mountButton" id="pathmountButton">Browse</button>
+                    <div class="gamePathText" id="pathmount">gamePathText</div>
+                    <div id="noticeText"><b>Note: </b>This is the file path to your 'assettocorsa' directory, The executable location is NOT needed.</div>
+
+                    <input type="checkbox" class="checkboxes" id="notiCbx" name="notification" onchange="notificationChoice(this)">
+                    <label for="notiCbx" class="globalFont">Allow Notifications</label>
+                </div>
+            </div>
+
+            <div class="columnTopMid unselectable">
+
+                <!-- Background -->
+                <svg id="webkitDrag" height="320px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 327.3 320">
+                    <defs>
+                        <style>
+                            .topmidcls-1 {
+                                isolation: isolate;
+                            }
+
+                            .topmidcls-2 {
+                                fill: rgba(211, 209, 192, .1);
+                                mix-blend-mode: overlay;
+                            }
+                        </style>
+                    </defs>
+                    <g class="topmidcls-1">
+                        <g id="Layer_2" data-name="Layer 2">
+                            <g id="Header">
+                                <path class="topmidcls-2"
+                                    d="M327.3,161.41a21,21,0,0,0-2.48-9.92A38.79,38.79,0,0,1,320,133.26V5a5,5,0,0,0-5-5H5A5,5,0,0,0,0,5V315a5,5,0,0,0,5,5H315a5,5,0,0,0,5-5V189.55a38.79,38.79,0,0,1,4.82-18.23A21,21,0,0,0,327.3,161.41Z" />
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+
+                <!-- Next Arrow -->
+                <img id="nextArrowMid" src="src/images/nextArrow.png" onclick="changeEventSlide()">
+
+                <!-- First dot -->
+                <svg id="eventdot1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6.65 6.65">
+                    <defs>
+                        <style>
+                            .dotemptycls-1 {
+                                fill: #dbdad5;
+                            }
+                        </style>
+                    </defs>
+                    <g id="Layer_2" data-name="Layer 2">
+                        <g id="Header">
+                            <path class="dotemptycls-1"
+                                d="M3.32,1A2.33,2.33,0,1,1,1,3.32,2.33,2.33,0,0,1,3.32,1m0-1A3.33,3.33,0,1,0,6.65,3.32,3.32,3.32,0,0,0,3.32,0Z" />
+                        </g>
+                    </g>
+                </svg>
+                <svg id="eventdot1full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6.65 6.65">
+                    <defs>
+                        <style>
+                            .dotfullcls-1 {
+                                fill: #dbdad5;
+                            }
+                        </style>
+                    </defs>
+                    <g id="Layer_2" data-name="Layer 2">
+                        <g id="Header">
+                            <circle class="dotfullcls-1" cx="3.32" cy="3.32" r="3.32" />
+                        </g>
+                    </g>
+                </svg>
+
+                <!-- Second dot -->
+                <svg id="eventdot2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6.65 6.65">
+                    <defs>
+                        <style>
+                            .dotemptycls-1 {
+                                fill: #dbdad5;
+                            }
+                        </style>
+                    </defs>
+                    <g id="Layer_2" data-name="Layer 2">
+                        <g id="Header">
+                            <path class="dotemptycls-1"
+                                d="M3.32,1A2.33,2.33,0,1,1,1,3.32,2.33,2.33,0,0,1,3.32,1m0-1A3.33,3.33,0,1,0,6.65,3.32,3.32,3.32,0,0,0,3.32,0Z" />
+                        </g>
+                    </g>
+                </svg>
+                <svg id="eventdot2full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6.65 6.65">
+                    <defs>
+                        <style>
+                            .dotfullcls-1 {
+                                fill: #dbdad5;
+                            }
+                        </style>
+                    </defs>
+                    <g id="Layer_2" data-name="Layer 2">
+                        <g id="Header">
+                            <circle class="dotfullcls-1" cx="3.32" cy="3.32" r="3.32" />
+                        </g>
+                    </g>
+                </svg>
+
+                <div class="contentTopMid">
+                    <div id="cellHead2" class="globalFont">Next Event</div>
+
+                    <div id="devEventContent">
+                        <div id="devEventContentText">
+                            Coming Soon
+                        </div>
+                    </div>
+
+                    <!-- First slide -->
+                    <div id="eventcontent1">
+
+                        <div id="eventCardTint"></div>
+                        <div id="eventCard"></div>
+
+                        <div id="cardHeader">
+                            <div id="eventCardTitleTop1" class="cardTitleFont cardTitleTop">STYRIAN</div>
+                            <div id="eventCardTitleBottom1" class="cardTitleFont cardTitleBottom">GP</div>
+                        </div>
+
+                        <!-- Date holders -->
+                        <div id="timingContent">
+                            <div id="dateHolders">
+                                <svg id="dateHolder1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 86.58 12.59"><defs><style>.dhcls-1{fill:url(#linear-gradient);}</style><linearGradient id="linear-gradient" x1="9.79" y1="0.08" x2="94.92" y2="15.87" gradientUnits="userSpaceOnUse"><stop offset="0.06" stop-color="#fddb00" stop-opacity="0"/><stop offset="0.49" stop-color="#fddb00"/></linearGradient></defs><g id="Layer_2" data-name="Layer 2"><g id="Header"><polygon class="dhcls-1" points="83 12.59 0 12.59 7.08 0 86.58 0 83 12.59"/></g></g></svg>
+                                <!-- <div>Some fucking text here</div> -->
+                                <svg id="dateHolder2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 86.58 12.59"><defs><style>.dhcls-1{fill:url(#linear-gradient);}</style><linearGradient id="linear-gradient" x1="9.79" y1="0.08" x2="94.92" y2="15.87" gradientUnits="userSpaceOnUse"><stop offset="0.06" stop-color="#fddb00" stop-opacity="0"/><stop offset="0.49" stop-color="#fddb00"/></linearGradient></defs><g id="Layer_2" data-name="Layer 2"><g id="Header"><polygon class="dhcls-1" points="83 12.59 0 12.59 7.08 0 86.58 0 83 12.59"/></g></g></svg>
+                                <svg id="dateHolder3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 86.58 12.59"><defs><style>.dhcls-1{fill:url(#linear-gradient);}</style><linearGradient id="linear-gradient" x1="9.79" y1="0.08" x2="94.92" y2="15.87" gradientUnits="userSpaceOnUse"><stop offset="0.06" stop-color="#fddb00" stop-opacity="0"/><stop offset="0.49" stop-color="#fddb00"/></linearGradient></defs><g id="Layer_2" data-name="Layer 2"><g id="Header"><polygon class="dhcls-1" points="83 12.59 0 12.59 7.08 0 86.58 0 83 12.59"/></g></g></svg>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Second slide -->
+                    <div id="eventcontent2">
+                        
+                        <div id="eventCardTint"></div>
+                        <div id="eventCard2"></div>
+
+                        <div id="cardHeader">
+                            <div id="eventCardTitleTop2" class="cardTitleFont cardTitleTop">STYRIAN</div>
+                            <div id="eventCardTitleBottom2" class="cardTitleFont cardTitleBottom">GP</div>
+                        </div>
+                        
+                        <!-- Date holders -->
+                        <div id="timingContent">
+                            <div id="dateHolders">
+                                <svg id="dateHolder1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 86.58 12.59"><defs><style>.dhcls-12{fill:url(#linear-gradient);}</style><linearGradient id="linear-gradient" x1="9.79" y1="0.08" x2="94.92" y2="15.87" gradientUnits="userSpaceOnUse"><stop offset="0.06" stop-color="#fddb00" stop-opacity="0"/><stop offset="0.49" stop-color="#fddb00"/></linearGradient></defs><g id="Layer_2" data-name="Layer 2"><g id="Header"><polygon class="dhcls-12" points="83 12.59 0 12.59 7.08 0 86.58 0 83 12.59"/></g></g></svg>
+                                <!-- <div>Some fucking text here</div> -->
+                                <svg id="dateHolder2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 86.58 12.59"><defs><style>.dhcls-12{fill:url(#linear-gradient);}</style><linearGradient id="linear-gradient" x1="9.79" y1="0.08" x2="94.92" y2="15.87" gradientUnits="userSpaceOnUse"><stop offset="0.06" stop-color="#fddb00" stop-opacity="0"/><stop offset="0.49" stop-color="#fddb00"/></linearGradient></defs><g id="Layer_2" data-name="Layer 2"><g id="Header"><polygon class="dhcls-12" points="83 12.59 0 12.59 7.08 0 86.58 0 83 12.59"/></g></g></svg>
+                                <svg id="dateHolder3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 86.58 12.59"><defs><style>.dhcls-12{fill:url(#linear-gradient);}</style><linearGradient id="linear-gradient" x1="9.79" y1="0.08" x2="94.92" y2="15.87" gradientUnits="userSpaceOnUse"><stop offset="0.06" stop-color="#fddb00" stop-opacity="0"/><stop offset="0.49" stop-color="#fddb00"/></linearGradient></defs><g id="Layer_2" data-name="Layer 2"><g id="Header"><polygon class="dhcls-12" points="83 12.59 0 12.59 7.08 0 86.58 0 83 12.59"/></g></g></svg>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="columnTopRight unselectable">
+
+                <!-- Background -->
+                <svg id="webkitDrag" height="320px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 327.3 320">
+                    <defs>
+                        <style>
+                            .toprightcls-1 {
+                                isolation: isolate;
+                            }
+
+                            .toprightcls-2 {
+                                fill: rgba(211, 209, 192, .1);
+                                mix-blend-mode: overlay;
+                            }
+                        </style>
+                    </defs>
+                    <g class="toprightcls-1">
+                        <g id="Layer_2" data-name="Layer 2">
+                            <g id="Header">
+                                <path class="toprightcls-2"
+                                    d="M324.82,151.49A38.79,38.79,0,0,1,320,133.26V5a5,5,0,0,0-5-5H5A5,5,0,0,0,0,5V132.39a40.21,40.21,0,0,0,3.92,17.67c.24.48.48,1,.73,1.43a21,21,0,0,1,2.48,9.92,21,21,0,0,1-2.48,9.91l-.07.14a40.54,40.54,0,0,0-4.58,19V315a5,5,0,0,0,5,5H315a5,5,0,0,0,5-5V189.55a38.79,38.79,0,0,1,4.82-18.23,21.06,21.06,0,0,0,0-19.83Z" />
+                            </g>
+                        </g>
+                    </g>
+                </svg>
+
+                <!-- Next Arrow -->
+                <img id="nextArrowRight" src="src/images/nextArrow.png" onclick="changeInfoSlide()">
+
+                <!-- First dot -->
+                <svg id="infodot1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6.65 6.65">
+                    <defs>
+                        <style>
+                            .infodotemptycls-1 {
+                                fill: #dbdad5;
+                            }
+                        </style>
+                    </defs>
+                    <g id="Layer_2" data-name="Layer 2">
+                        <g id="Header">
+                            <path class="infodotemptycls-1"
+                                d="M3.32,1A2.33,2.33,0,1,1,1,3.32,2.33,2.33,0,0,1,3.32,1m0-1A3.33,3.33,0,1,0,6.65,3.32,3.32,3.32,0,0,0,3.32,0Z" />
+                        </g>
+                    </g>
+                </svg>
+                <svg id="infodot1full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6.65 6.65">
+                    <defs>
+                        <style>
+                            .infodotfullcls-1 {
+                                fill: #dbdad5;
+                            }
+                        </style>
+                    </defs>
+                    <g id="Layer_2" data-name="Layer 2">
+                        <g id="Header">
+                            <circle class="infodotfullcls-1" cx="3.32" cy="3.32" r="3.32" />
+                        </g>
+                    </g>
+                </svg>
+
+                <!-- Second dot -->
+                <svg id="infodot2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6.65 6.65">
+                    <defs>
+                        <style>
+                            .infodotemptycls-1 {
+                                fill: #dbdad5;
+                            }
+                        </style>
+                    </defs>
+                    <g id="Layer_2" data-name="Layer 2">
+                        <g id="Header">
+                            <path class="infodotemptycls-1"
+                                d="M3.32,1A2.33,2.33,0,1,1,1,3.32,2.33,2.33,0,0,1,3.32,1m0-1A3.33,3.33,0,1,0,6.65,3.32,3.32,3.32,0,0,0,3.32,0Z" />
+                        </g>
+                    </g>
+                </svg>
+                <svg id="infodot2full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6.65 6.65">
+                    <defs>
+                        <style>
+                            .infodotfullcls-1 {
+                                fill: #dbdad5;
+                            }
+                        </style>
+                    </defs>
+                    <g id="Layer_2" data-name="Layer 2">
+                        <g id="Header">
+                            <circle class="infodotfullcls-1" cx="3.32" cy="3.32" r="3.32" />
+                        </g>
+                    </g>
+                </svg>
+
+                <div class="contentTopRight">
+                    <div class="cellHead globalFont">Information</div>
+
+                    <div id="infocontent1">
+                        <div class="informationContent">
+                            Welcome to the
+                            <br>
+                            Asfalto Ascari <span style="font-weight: 600;">Project Echelon</span>.
+                            <br><br>
+                            This is a pre-release version of the software for testers, we really value your feedback to improve our services and products, thank you for downloading this software..
+                            <br><br>
+                            Get in touch with us at:
+                            <br><br>
+                            <span style="font-weight: 600;">Developer@AsfaltoAscari.com</span>
+                        </div>
+                    </div>
+                    <div id="infocontent2">
+                        
+                        <!-- social links and such go here -->
+
+                        <!-- Discord Server SVG -->
+                        <div id="discordClick">
+                            <svg id="discordIcon" width="71" height="55" viewBox="0 0 71 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g clip-path="url(#clip0)">
+                                    <path
+                                        d="M60.1045 4.8978C55.5792 2.8214 50.7265 1.2916 45.6527 0.41542C45.5603 0.39851 45.468 0.440769 45.4204 0.525289C44.7963 1.6353 44.105 3.0834 43.6209 4.2216C38.1637 3.4046 32.7345 3.4046 27.3892 4.2216C26.905 3.0581 26.1886 1.6353 25.5617 0.525289C25.5141 0.443589 25.4218 0.40133 25.3294 0.41542C20.2584 1.2888 15.4057 2.8186 10.8776 4.8978C10.8384 4.9147 10.8048 4.9429 10.7825 4.9795C1.57795 18.7309 -0.943561 32.1443 0.293408 45.3914C0.299005 45.4562 0.335386 45.5182 0.385761 45.5576C6.45866 50.0174 12.3413 52.7249 18.1147 54.5195C18.2071 54.5477 18.305 54.5139 18.3638 54.4378C19.7295 52.5728 20.9469 50.6063 21.9907 48.5383C22.0523 48.4172 21.9935 48.2735 21.8676 48.2256C19.9366 47.4931 18.0979 46.6 16.3292 45.5858C16.1893 45.5041 16.1781 45.304 16.3068 45.2082C16.679 44.9293 17.0513 44.6391 17.4067 44.3461C17.471 44.2926 17.5606 44.2813 17.6362 44.3151C29.2558 49.6202 41.8354 49.6202 53.3179 44.3151C53.3935 44.2785 53.4831 44.2898 53.5502 44.3433C53.9057 44.6363 54.2779 44.9293 54.6529 45.2082C54.7816 45.304 54.7732 45.5041 54.6333 45.5858C52.8646 46.6197 51.0259 47.4931 49.0921 48.2228C48.9662 48.2707 48.9102 48.4172 48.9718 48.5383C50.038 50.6034 51.2554 52.5699 52.5959 54.435C52.6519 54.5139 52.7526 54.5477 52.845 54.5195C58.6464 52.7249 64.529 50.0174 70.6019 45.5576C70.6551 45.5182 70.6887 45.459 70.6943 45.3942C72.1747 30.0791 68.2147 16.7757 60.1968 4.9823C60.1772 4.9429 60.1437 4.9147 60.1045 4.8978ZM23.7259 37.3253C20.2276 37.3253 17.3451 34.1136 17.3451 30.1693C17.3451 26.225 20.1717 23.0133 23.7259 23.0133C27.308 23.0133 30.1626 26.2532 30.1066 30.1693C30.1066 34.1136 27.28 37.3253 23.7259 37.3253ZM47.3178 37.3253C43.8196 37.3253 40.9371 34.1136 40.9371 30.1693C40.9371 26.225 43.7636 23.0133 47.3178 23.0133C50.9 23.0133 53.7545 26.2532 53.6986 30.1693C53.6986 34.1136 50.9 37.3253 47.3178 37.3253Z"
+                                        fill="#ffffff" />
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0">
+                                        <rect width="71" height="55" fill="white" />
+                                    </clipPath>
+                                </defs>
+                            </svg>
+                        </div>
+
+                        <!-- GitHub SVG -->
+                        <div id="githubClick">
+                            <svg id="githubIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                                    fill="#ffffff" />
+                            </svg>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="columnBottomLong unselectable">
+                <div class="acontainer">
+                    <div class="cellHead globalFont">Series Registration</div>
+
+                    <form class="reg" id="checkboxes">
+                        <input type="checkbox" class="checkboxes" id="cb1" name="flSpec" onchange="valueParse(this)">
+                        <label for="cb1" class="globalFont">Formula</label>
+
+                        <input type="checkbox" class="checkboxes" id="cb2" name="gtSpec" onchange="valueParse(this)">
+                        <label for="cb2" class="globalFont">GT</label>
+
+                        <input type="checkbox" class="checkboxes" id="cb3" name="cSpec" onchange="valueParse(this)">
+                        <label for="cb3" class="globalFont">Classics</label>
+                    </form>
+
+                </div>
+            </div>
+
+            <div class="columnBottomRight unselectable">
+                <div class="containerBR">
+                    <div class="cellHead globalFont">Your Profile</div>
+
+                    <div id="devMemberContent">
+                        <div id="devMemberContentText">
+                            Coming Soon
+                        </div>
+                    </div>
+
+                    <div id="memberinfoContainer" class="memberinfoContainer">
+                        <div class="memberText">Member Number :</div><div class="memberTextAfter" id="memberNumber">0001</div>
+                        <div class="memberText">Member Type :</div><div class="memberTextAfter" id="memberType">Premium</div>
+                    </div>
+
+                    <!-- Settings icon -->
+                    <svg id="settingsCogProfile" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 20">
+                        <defs>
+                            <style>
+                                .darksettingscls-1 {
+                                    fill: #1a1a1a;
+                                }
+                            </style>
+                        </defs>
+                        <g id="Layer_2" data-name="Layer 2">
+                            <g id="Header">
+                                <path class="darksettingscls-1"
+                                    d="M8.5,0,0,5V15l8.5,5L17,15V5Zm.16,14a4,4,0,1,1,4-4A4,4,0,0,1,8.66,14Z" />
+                            </g>
+                        </g>
+                    </svg>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="notification">
+
+        <div id="notificationIcon">
+            <img id="notificationIconContent" src="src/images/information.png">
+        </div>
+
+        <div id="notificationContent">
+            <div id="notificationTitle">
+                Title
+            </div>
+            <div id="notificationSubtitle">
+                Content
+            </div>
+        </div>
+
+    </div>
+
+    <div id="footerText">
+        Echelon_BETA
+    </div>
+
+    <script src="srcipt2.js"></script>
+</body>
+</html>
