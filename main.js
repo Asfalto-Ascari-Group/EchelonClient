@@ -15,6 +15,8 @@ const socket = io(`http://34.142.46.24:4644`, {
     reconnectionDelayMax: 6000
 });
 
+// File server should be a different port but on the same ip address
+
 // Global variables
 var log = console.log.bind(console);
 var isPathFound = false;
@@ -23,6 +25,7 @@ var isWindowOn = false;
 let notisChoice = false;
 const modulesArr = ['flSpec', 'gtSpec', 'cSpec'];
 var isServerConnected = false;
+var completedModulesArr = [];
 
 // Configure window options
 var win;
@@ -139,7 +142,9 @@ socket.on('currentServerResponse', (arr) => {
     let json = arr.json;
     let id = arr.id;
     let counter = 0;
-    
+
+    completedModulesArr.push(id);
+
     for (let item of json) {
 
         var req = http.get(item.urlpath, async (res) => {
@@ -150,13 +155,8 @@ socket.on('currentServerResponse', (arr) => {
             );
         });
 
-        // const file = fs.createWriteStream(`content\\temp\\resources\\${item.filename}`);
-        // const req = http.get(item.urlpath, (res) => {
-        //   res.pipe(file)
-        // });
-
         req.on('close', () => {
-            // log('done')
+
             let path = `${gameInstallDir}/${item.filename}`;
             win.webContents.send('currentInstallPath', path);
 
@@ -172,15 +172,16 @@ socket.on('currentServerResponse', (arr) => {
                     }).show();
                 };
 
-                // Send install path to renderer
-                win.webContents.send('currentInstallPathFinish', 'Finished');
-
                 // Get and set the new client version
                 var clientVersion = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/clientVersion.json')).toString());
 
                 let serverVersion = arr.version[id].version;
                 clientVersion[id].version = serverVersion;
                 fs.writeFileSync(pth.join(__dirname, './content/temp/clientVersion.json'), JSON.stringify(clientVersion, null, 4));
+
+                // Send install path to renderer
+                win.webContents.send('currentInstallPathFinish', `${id} is done..`);
+                log(completedModulesArr)
             };
         });
     };
@@ -201,7 +202,6 @@ socket.on('versionCheck', (serverArr) => {
             array.push(moduleName.type);
 
             // Re-Download ALL files in respective module via user choice
-            // win.webContents.send('versionUpdate', 'Assets out of date, Please sync..');
             win.webContents.send('notification', {title: 'Racing Series Out of Date', content: `Please sync the following: ${array.join()}`, type: 'bad', ms: 10000});
         };
     };
