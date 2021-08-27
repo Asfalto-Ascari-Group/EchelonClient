@@ -1,5 +1,5 @@
 const { BrowserWindow, app, ipcMain, autoUpdater, dialog, Notification } = require('electron');
-require('update-electron-app')()
+require('update-electron-app')();
 const { io } = require('socket.io-client');
 const fs = require('fs');
 const { getGamePath } = require('steam-game-path');
@@ -8,6 +8,15 @@ const http = require('http');
 const pth = require('path');
 
 require('dotenv').config();
+
+// Configure electron autoUpdater
+const server = 'https://github.com/Asfalto-Ascari-Group/EchelonClient-Release-Stable';
+const url = `${server}/update/${process.platform}/${app.getVersion()}`;
+
+autoUpdater.setFeedURL({ url });
+setInterval(() => {
+    autoUpdater.checkForUpdates();
+}, 10000);
 
 // Define variable connection
 const socket = io(`http://34.142.46.24:4644`, {
@@ -143,7 +152,7 @@ socket.on('currentServerResponse', (arr) => {
     let id = arr.id;
     let counter = 0;
 
-    completedModulesArr.push(id);
+    // completedModulesArr.push(id);
 
     for (let item of json) {
 
@@ -153,6 +162,12 @@ socket.on('currentServerResponse', (arr) => {
             res.pipe(
                 unzipper.Extract({path: `${gameInstallDir}/content/${item.type}/`})
             );
+        });
+
+        req.on('finish', () => {
+
+            let path = `${item.filename}`;
+            win.webContents.send('currentInstallPathFinish', `${path} has been received!`)
         });
 
         req.on('close', () => {
@@ -165,7 +180,7 @@ socket.on('currentServerResponse', (arr) => {
                 
                 // Check for notification boolean value and act accordingly
                 if (notisChoice == true) {
-                    const noti = new Notification({
+                    const notification = new Notification({
                         title: `${id} has Finished Syncing`,
                         body: 'Your Assetto Corsa content is synchronised',
                         silent: true,
@@ -181,7 +196,6 @@ socket.on('currentServerResponse', (arr) => {
 
                 // Send install path to renderer
                 win.webContents.send('currentInstallPathFinish', `${id} is done..`);
-                log(completedModulesArr)
             };
         });
     };

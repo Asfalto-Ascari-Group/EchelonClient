@@ -85,6 +85,7 @@ ipcRenderer.on('currentInstallPath', (event, path) => {
 ipcRenderer.on('currentInstallPathFinish', (event, msg) => {
     // log('..' + path.split('\\common')[1].replace(/\\/g, '/'));
     document.getElementById('demoText2').innerHTML = msg;
+    document.getElementById('demoText2').marginRight = '-40px';
 });
 
 // Mount sends path back to ipcMain when user chooses a path
