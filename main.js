@@ -65,7 +65,7 @@ function createWindow() {
         height: 870,
         width: 1080,
         title: `Project Echelon @${process.env.VERSION}`,
-        icon: 'root\\src\\images\\icon.png',
+        icon: '.\\root\\src\\images\\thumb.png',
         resizable: false,
         frame: false,
         webPreferences: {
@@ -197,7 +197,6 @@ socket.on('currentServerResponse', (arr) => {
 
             // Add item to client hash map
             let hashMap = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/client.json')));
-            // let hashEntry = {};
             
             hashMap.push({
                 type: item.type,
@@ -205,19 +204,15 @@ socket.on('currentServerResponse', (arr) => {
                 ext: item.ext,
                 basename: item.basename,
                 urlpath: item.urlpath,
-                path: `${gameInstallDir}\\${item.filename}`
+                path: `${gameInstallDir}\\content\\${item.type}\\${item.filename}`
             });
 
             let data = JSON.stringify(hashMap, null, 4);
-            fs.writeFileSync(pth.join(__dirname, './content/temp/client.json'), data);
-            // fs.writeFileSync(pth.join(__dirname, './content/temp/client.json'), JSON.stringify(hashEntry[0], null, 4) + ',');
+            let duplicateEntry = data.find(item => item.path == `${gameInstallDir}\\content\\${item.type}\\${item.filename}`);
 
-            // if (fs.readFileSync(pth.join(__dirname, './content/temp/client.json')).toString().length == 0) {
-            //     fs.appendFileSync(pth.join(__dirname, './content/temp/client.json'), ''+JSON.stringify(hashEntry[0], null, 4));
-            // } 
-            // else if (!fs.readFileSync(pth.join(__dirname, './content/temp/client.json')).toString().length == 0) {
-            //     fs.appendFileSync(pth.join(__dirname, './content/temp/client.json'), ',\n'+JSON.stringify(hashEntry[0], null, 4));
-            // }
+            if (!duplicateEntry) {
+                fs.writeFileSync(pth.join(__dirname, './content/temp/client.json'), data);
+            };
 
             // Increment counter
             counter++;
