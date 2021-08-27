@@ -1,5 +1,4 @@
 const { BrowserWindow, app, ipcMain, autoUpdater, dialog, Notification } = require('electron');
-require('update-electron-app')();
 const { io } = require('socket.io-client');
 const fs = require('fs');
 const { getGamePath } = require('steam-game-path');
@@ -10,13 +9,11 @@ const pth = require('path');
 require('dotenv').config();
 
 // Configure electron autoUpdater
-const server = 'https://github.com/Asfalto-Ascari-Group/EchelonClient-Release-Stable';
-const url = `${server}/update/${process.platform}/${app.getVersion()}`;
-
-autoUpdater.setFeedURL({ url });
-setInterval(() => {
-    autoUpdater.checkForUpdates();
-}, 10000);
+require('update-electron-app')({
+    repo: 'https://github.com/Asfalto-Ascari-Group/EchelonClient-Release-Stable',
+    updateInterval: '1 minute',
+    logger: require(electron - log)
+});
 
 autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
     const dialogOpts = {
@@ -33,8 +30,12 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
 });
 
 autoUpdater.on('error', msg => {
-    console.error('There was a problem updating the application')
-    console.error(msg)
+    console.error('There was a problem updating the application');
+    console.error(msg);
+});
+
+autoUpdater.on('checking-for-update', () => {
+    win.webContents.send('log', 'hit');
 });
 
 // Define variable connection

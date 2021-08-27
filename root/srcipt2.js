@@ -41,6 +41,10 @@ ipcRenderer.on('pathStatus', (event, arr) => {
     document.getElementById('pathmount').innerHTML = arr.msg;
 });
 
+ipcRenderer.on('log', (event, msg) => {
+    log(msg);
+});
+
 // ipcRenderer.on('serverState?', (event, rescode) => {
 //     // show respective pop-ups for user
 //     if (rescode === 404) {
