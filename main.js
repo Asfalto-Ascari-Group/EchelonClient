@@ -11,8 +11,8 @@ require('dotenv').config();
 // Configure electron autoUpdater
 require('update-electron-app')({
     repo: 'https://github.com/Asfalto-Ascari-Group/EchelonClient-Release-Stable',
-    updateInterval: '1 minute',
-    logger: require(electron - log)
+    updateInterval: '5 minutes',
+    logger: require('electron-log')
 });
 
 autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
