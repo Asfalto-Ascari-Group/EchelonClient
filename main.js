@@ -172,13 +172,11 @@ socket.on('currentServerResponse', (arr) => {
     let id = arr.id;
     let counter = 0;
 
-    // completedModulesArr.push(id);
-
     for (let item of json) {
 
         var req = http.get(item.urlpath, async (res) => {
 
-            // Direct the download stream to unzipper function
+            // Direct the download stream to unzipper
             res.pipe(
                 unzipper.Extract({path: `${gameInstallDir}/content/${item.type}/`})
             );
@@ -186,16 +184,45 @@ socket.on('currentServerResponse', (arr) => {
 
         req.on('finish', () => {
 
+            // Send current module namesapce to renderer
             let path = `${item.filename}`;
             win.webContents.send('currentInstallPathFinish', `${path} has been received!`)
         });
 
         req.on('close', () => {
 
+            // Send current download path to renderer
             let path = `${gameInstallDir}/${item.filename}`;
             win.webContents.send('currentInstallPath', path);
 
+            // Add item to client hash map
+            let hashMap = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/client.json')));
+            // let hashEntry = {};
+            
+            hashMap.push({
+                type: item.type,
+                filename: item.filename,
+                ext: item.ext,
+                basename: item.basename,
+                urlpath: item.urlpath,
+                path: `${gameInstallDir}\\${item.filename}`
+            });
+
+            let data = JSON.stringify(hashMap, null, 4);
+            fs.writeFileSync(pth.join(__dirname, './content/temp/client.json'), data);
+            // fs.writeFileSync(pth.join(__dirname, './content/temp/client.json'), JSON.stringify(hashEntry[0], null, 4) + ',');
+
+            // if (fs.readFileSync(pth.join(__dirname, './content/temp/client.json')).toString().length == 0) {
+            //     fs.appendFileSync(pth.join(__dirname, './content/temp/client.json'), ''+JSON.stringify(hashEntry[0], null, 4));
+            // } 
+            // else if (!fs.readFileSync(pth.join(__dirname, './content/temp/client.json')).toString().length == 0) {
+            //     fs.appendFileSync(pth.join(__dirname, './content/temp/client.json'), ',\n'+JSON.stringify(hashEntry[0], null, 4));
+            // }
+
+            // Increment counter
             counter++;
+
+            // If all items on respective module have finished downloading
             if (json.length == counter) {
                 
                 // Check for notification boolean value and act accordingly

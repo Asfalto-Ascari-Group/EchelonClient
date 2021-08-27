@@ -646,11 +646,13 @@ svg * {
 
 #demoText2 {
     text-align: right;
-    margin-right: 3px;
+    align-items: right;
+    justify-content: right;
+    margin-left: 3px;
     font-family: 'MT-Light';
     color: white;
     font-size: 10px;
-    float: left;
+    /* float: left; */
     word-break: break-all;
 }
 
