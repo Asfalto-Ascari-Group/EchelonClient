@@ -172,6 +172,7 @@ socket.on('currentServerResponse', (arr) => {
     let id = arr.id;
     let counter = 0;
 
+    // Loop through all items in response JSON
     for (let item of json) {
 
         var req = http.get(item.urlpath, async (res) => {
@@ -184,7 +185,7 @@ socket.on('currentServerResponse', (arr) => {
 
         req.on('finish', () => {
 
-            // Send current module namesapce to renderer
+            // Send current module namespace to renderer
             let path = `${item.filename}`;
             win.webContents.send('currentInstallPathFinish', `${path} has been received!`)
         });
@@ -207,12 +208,23 @@ socket.on('currentServerResponse', (arr) => {
                 path: `${gameInstallDir}\\content\\${item.type}\\${item.filename}`
             });
 
-            let data = JSON.stringify(hashMap, null, 4);
-            let duplicateEntry = data.find(item => item.path == `${gameInstallDir}\\content\\${item.type}\\${item.filename}`);
+            // Check if it's a duplicate entry, if it is then don't add it
+            const dupe = hashMap.find(entry => entry.path.replace(/\\/g, "/") == `${gameInstallDir}\\content\\${item.type}\\${item.filename}`);
 
-            if (!duplicateEntry) {
-                fs.writeFileSync(pth.join(__dirname, './content/temp/client.json'), data);
-            };
+            // var foo = `${gameInstallDir}\\content\\${item.type}\\${item.filename}`;
+            // var fee = "E:\\Steam\\steamapps\\common\\assettocorsa\\content\\cars\\mercedes_w125_v0.92b.zip";
+
+            log(dupe);
+
+            // if (!dupe) {
+            //     log('none')
+            //     let data = JSON.stringify(hashMap, null, 4);
+            //     fs.writeFileSync(pth.join(__dirname, './content/temp/client.json'), data);
+            // }
+            // else if (dupe) {
+            //     log('hit')
+            //     log(`${gameInstallDir}\\content\\${item.type}\\${item.filename}`)
+            // };
 
             // Increment counter
             counter++;
@@ -220,7 +232,7 @@ socket.on('currentServerResponse', (arr) => {
             // If all items on respective module have finished downloading
             if (json.length == counter) {
                 
-                // Check for notification boolean value and act accordingly
+                // Check for notification boolean
                 if (notisChoice == true) {
                     const notification = new Notification({
                         title: `${id} has Finished Syncing`,
@@ -283,5 +295,4 @@ socket.on('connect_error', (err) => {
     else if (!isWindowOn) {
         isServerConnected = false;
     };
-
 });
