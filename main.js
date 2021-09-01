@@ -5,6 +5,7 @@ const { getGamePath } = require('steam-game-path');
 const unzipper= require('unzipper');
 const http = require('http');
 const pth = require('path');
+const { time } = require('console');
 
 require('dotenv').config();
 
@@ -41,20 +42,27 @@ autoUpdater.on('checking-for-update', () => {
 // Define variable connection
 const socket = io(`http://34.142.46.24:4644`, {
     reconnection: true,
-    reconnectionDelayMax: 6000
+    pingTimeout: 1000,
+    pingInterval: 1000,
+    reconnectionDelayMax: 1000
 });
-
-// File server should be a different port but on the same ip address
+// Above connection is the socket.io server
+// During the request phase, the server will send back a socket that leads to the file server to download content
 
 // Global variables
 var log = console.log.bind(console);
 var isPathFound = false;
 var gameInstallDir;
 var isWindowOn = false;
-let notisChoice = false;
+var notisChoice = false;
+var canHashMapBeFormatted = false;
 const modulesArr = ['flSpec', 'gtSpec', 'cSpec'];
 var isServerConnected = false;
 var completedModulesArr = [];
+var chosenModules = [];
+var isDownloadStopped = new Boolean();
+isDownloadStopped = false;
+var moduleCount = 0;
 
 // Configure window options
 var win;
@@ -75,12 +83,13 @@ function createWindow() {
         }
     });
 
-    win.loadFile('root/index2.html');
+    win.loadFile('root/index.html');
 };
 
 // When app is ready, create window
 app.whenReady().then(() => {
     createWindow();
+    // If app has been activated but no windows were created (internal error), create window
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
             createWindow();
@@ -98,6 +107,7 @@ app.on('window-all-closed', () => {
 // On window load
 ipcMain.on('windowLoad', (event, arr) => {
 
+    // Get game path
     var data = getGamePath(244210);
     isWindowOn = true;
     notisChoice = arr.notis;
@@ -153,11 +163,45 @@ ipcMain.on('gamePathMount', () => {
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
 });
 
-// Request files in json format from server
-ipcMain.on('getCurrent', (event, array) => {
-    for (const item of array.arr) {
-        socket.emit('getCurrent', {type: item});
+// Fired when the notification bool value has been changed on the renderer
+ipcMain.on('notisChange', async (event, bool) => {
+    // Request boolean value for notifications from appStorage
+    notisChoice = bool;
+});
+
+// Listen for series change on the renderer and store array
+ipcMain.on('racingSeries', (event, arr) => {
+    
+    if (arr.value == true) {
+        if (!chosenModules.filter(e => e === arr.type).length > 0) {
+            chosenModules.push(arr.type);
+        };
+    }
+    else if (arr.value == false) {
+        if (chosenModules.filter(e => e == arr.type).length > 0) {
+            removeItemOnce(chosenModules, arr.type);
+        };
     };
+});
+
+// Remove item from 2D array only
+const removeItemOnce = (arr, value) => {
+    var index = arr.indexOf(value);
+    if (index > -1) {
+        arr.splice(index, 1);
+    };
+    return arr;
+};
+
+// dev
+ipcMain.on('cout', (event, arr) => {
+    log(arr);
+});
+
+// Request files from server in json format
+ipcMain.on('getCurrent', (event, thing) => {
+    socket.emit('getCurrent', {modules: chosenModules});
+    win.webContents.send('btnReact', 'go');
 });
 
 ipcMain.on('notisChange', async (event, bool) => {
@@ -165,92 +209,130 @@ ipcMain.on('notisChange', async (event, bool) => {
     notisChoice = bool;
 });
 
+ipcMain.on('syncButton', (event, foo) => {
+
+    if (foo == 'start') {
+        win.webContents.send('buttonStart');
+    }
+    else if (foo == 'stop') {
+        const options = {
+            buttons: ['Cancel', 'Yes, please', 'No, thanks'],
+            defaultId: 2,
+            title: 'Stop Download?',
+            message: 'Do you want to stop the download?',
+            detail: 'As of Echelon_BETA, Stopping a download can cause un-wanted side effects.'
+        };
+
+        dialog.showMessageBox(options)
+        .then(result => {
+            if (result.response == 1) {
+                win.webContents.send('buttonStop');
+                isDownloadStopped = true;
+            };
+        });
+    };
+});
+
 // Catch response json files from server
 socket.on('currentServerResponse', (arr) => {
 
-    let json = arr.json;
-    let id = arr.id;
-    let counter = 0;
+    var json = [];
+    for (item of arr.response) {
+        json.push(item);
+    };
+    var counter = 0;
+    var itemCount = json.length;
+    var percentTerm = 100/itemCount;
+    var totalPercent = 0;
 
+    // DOWNLOAD PORTION
     // Loop through all items in response JSON
+
     for (let item of json) {
 
-        var req = http.get(item.urlpath, async (res) => {
+        let itemString = item.urlpath.split('/');
+        var id = itemString[5];
 
-            // Direct the download stream to unzipper
+        // Start file download
+        var req = http.get(item.urlpath, (res) => {
+
+            // Direct download stream to unzipper module
             res.pipe(
                 unzipper.Extract({path: `${gameInstallDir}/content/${item.type}/`})
             );
-        });
 
-        req.on('finish', () => {
-
-            // Send current module namespace to renderer
-            let path = `${item.filename}`;
-            win.webContents.send('currentInstallPathFinish', `${path} has been received!`)
-        });
-
-        req.on('close', () => {
-
-            // Send current download path to renderer
-            let path = `${gameInstallDir}/${item.filename}`;
-            win.webContents.send('currentInstallPath', path);
-
-            // Add item to client hash map
-            let hashMap = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/client.json')));
-            
-            hashMap.push({
-                type: item.type,
-                filename: item.filename,
-                ext: item.ext,
-                basename: item.basename,
-                urlpath: item.urlpath,
-                path: `${gameInstallDir}\\content\\${item.type}\\${item.filename}`
-            });
-
-            // Check if it's a duplicate entry, if it is then don't add it
-            const dupe = hashMap.find(entry => entry.path.replace(/\\/g, "/") == `${gameInstallDir}\\content\\${item.type}\\${item.filename}`);
-
-            // var foo = `${gameInstallDir}\\content\\${item.type}\\${item.filename}`;
-            // var fee = "E:\\Steam\\steamapps\\common\\assettocorsa\\content\\cars\\mercedes_w125_v0.92b.zip";
-
-            log(dupe);
-
-            // if (!dupe) {
-            //     log('none')
-            //     let data = JSON.stringify(hashMap, null, 4);
-            //     fs.writeFileSync(pth.join(__dirname, './content/temp/client.json'), data);
-            // }
-            // else if (dupe) {
-            //     log('hit')
-            //     log(`${gameInstallDir}\\content\\${item.type}\\${item.filename}`)
-            // };
-
-            // Increment counter
-            counter++;
-
-            // If all items on respective module have finished downloading
-            if (json.length == counter) {
+            res.on('close', () => {
                 
-                // Check for notification boolean
-                if (notisChoice == true) {
-                    const notification = new Notification({
-                        title: `${id} has Finished Syncing`,
-                        body: 'Your Assetto Corsa content is synchronised',
-                        silent: true,
-                    }).show();
+                // Send current download path to renderer
+                let path = `${gameInstallDir}/${item.filename}`;
+                win.webContents.send('currentInstallPath', path);
+
+                // Check if entry exists on the client hash map already
+                var clientHashMap = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/client.json')));
+                let dupe = clientHashMap.find(entry => entry.path.replace(/\\/g, "/") == `${gameInstallDir}\\content\\${item.type}\\${item.filename}`.replace(/\\/g, "/"));
+
+                // If the entry does not exist, then add the entry to the hash map
+                if (!dupe) {
+
+                    let hashMapFinal = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/client.json')));
+                    hashMapFinal.push({
+                        namespace: id,
+                        type: item.type,
+                        filename: item.filename,
+                        ext: item.ext,
+                        basename: item.basename,
+                        urlpath: item.urlpath,
+                        path: `${gameInstallDir}\\content\\${item.type}\\${item.filename}`
+                    });
+
+                    fs.writeFileSync(pth.join(__dirname, './content/temp/client.json'), JSON.stringify(hashMapFinal, null, 4));
                 };
 
-                // Get and set the new client version
-                var clientVersion = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/clientVersion.json')).toString());
+                if (!isDownloadStopped) {
+                    // Increment loop/progress counter
+                    counter++;
+                    totalPercent = totalPercent + percentTerm;
+                    win.webContents.send('downloadProgress', totalPercent);
+                };
 
-                let serverVersion = arr.version[id].version;
-                clientVersion[id].version = serverVersion;
-                fs.writeFileSync(pth.join(__dirname, './content/temp/clientVersion.json'), JSON.stringify(clientVersion, null, 4));
+                // If all items on respective module have finished downloading
+                if (json.length == counter) {
 
-                // Send install path to renderer
-                win.webContents.send('currentInstallPathFinish', `${id} is done..`);
-            };
+                    if (!isDownloadStopped) {
+                        // Send complete state for client UI
+                        win.webContents.send('btnReact', 'finish');
+                        win.webContents.send('downloadDone', 'Finished!');
+
+                        // Check for notification boolean
+                        if (notisChoice) {
+                            const notification = new Notification({
+                                title: `Echelon has Finished Syncing`,
+                                body: 'Your Assetto Corsa content is synchronised'
+                            }).show();
+                        };
+                    };
+
+                    // Get and set the new client version
+                    var clientVersion = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/clientVersion.json')).toString());
+
+                    // let serverVersion = arr.version[id].version;
+                    // clientVersion[id].version = serverVersion;
+                    fs.writeFileSync(pth.join(__dirname, './content/temp/clientVersion.json'), JSON.stringify(clientVersion, null, 4));
+
+                    // HASHMAP PORTION (where appplicable)
+                    // Determine what modules have been unticked and delete all items that are under the respective module
+                    var clientHashMap = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/client.json')));
+                    for (item of clientHashMap) {
+                        // if the item has a namespace that is inside of the chosenModules array
+                        // -- delete files BEFORE then text on screen then the hash map
+
+                        if (item.namespace == 'flSpec') {
+                            // log(item.filename)
+                        };
+                    };
+
+                };
+            });
         });
     };
 });
@@ -266,11 +348,20 @@ socket.on('versionCheck', (serverArr) => {
     for (item of modulesArr) {
         if (serverArr[item].version != clientVersion[item].version) {
 
-            let moduleName = serverArr[item];
+            moduleName = serverArr[item];
             array.push(moduleName.type);
 
-            // Re-Download ALL files in respective module via user choice
-            win.webContents.send('notification', {title: 'Racing Series Out of Date', content: `Please sync the following: ${array.join()}`, type: 'bad', ms: 10000});
+            // Notify user that a racing series is out of date
+            if (chosenModules.includes(moduleName.type) == false) {
+                win.webContents.send('notification', {title: 'Racing Series Out of Date', content: `Please sync the following: ${array.join()}`, type: 'bad', ms: 10000});
+            };
+            win.webContents.send('sendSeriesVersion', {module: moduleName, bool: 'bad'});
+        }
+        else if (serverArr[item].version == clientVersion[item].version) {
+
+            // If versions do match then change html content accordingly
+            const id = serverArr[item];
+            win.webContents.send('sendSeriesVersion', {module: id, bool: 'good'});
         };
     };
 });
@@ -280,6 +371,7 @@ socket.on('connect', () => {
     log('Connected to Server');
     if (isWindowOn) {
         win.webContents.send('notification', {title: 'Echelon Connected', content: `Echelon successfully connected to the server`, type: 'good', ms: 6000});
+        isDownloadStopped = false;
     }
     else if (!isWindowOn) {
         isServerConnected = true;
@@ -291,6 +383,7 @@ socket.on('connect_error', (err) => {
     log('Server not available, Retrying...');
     if (isWindowOn) {
         win.webContents.send('notification', {title: 'Echelon Lost Connection', content: `Awaiting server reconnection...`, type: 'bad', ms: 'none'});
+        isDownloadStopped = true;
     }
     else if (!isWindowOn) {
         isServerConnected = false;
