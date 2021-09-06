@@ -695,8 +695,9 @@ svg * {
 }
 
 #demoText {
-    position: absolute;
-    display: absolute;
+    text-align: right;
+    align-items: right;
+    justify-content: right;
     font-family: 'MT-SemiBold';
     font-size: 20px;
     color: white;
@@ -719,7 +720,7 @@ svg * {
     word-break: break-all;
 }
 
-#demoTextContainer {
+#demoText2Container {
     margin-left: 140px;
     margin-top: -30px;
     width: 100px;

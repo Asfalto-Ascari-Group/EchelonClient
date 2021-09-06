@@ -321,6 +321,8 @@ function settingsSyncFlip() {
     topelem.style.opacity = 1;
 };
 
+document.getElementById('demoText').innerHTML = '5%'
+
 ipcRenderer.on('btnReact', (event, type) => {
 
     if (type == 'go') {
@@ -336,6 +338,10 @@ ipcRenderer.on('btnReact', (event, type) => {
         // Return stop button back to normal
         document.getElementById('btnStop').style.opacity = 1;
         document.getElementById('btnStopTop').style.opacity = 1;
+
+        // Change innerHTML of progress text
+        document.getElementById('demoText2').innerHTML = 'Starting download..'
+        document.getElementById('demoText').innerHTML = '0%'
     }
     else if (type == 'finish') {
         const btnGo = document.getElementById('btnGo');
