@@ -119,6 +119,7 @@ ipcMain.on('windowLoad', (event, arr) => {
         win.webContents.send('gamePathStatus', {code: 404, msg: 'Game installation path not found'});
         isPathFound = false;
     }
+
     // If game path is found
     else if (data.game.path) {
         gameInstallDir = data.game.path;
@@ -126,18 +127,21 @@ ipcMain.on('windowLoad', (event, arr) => {
         isPathFound = true;
 
         // Configure documents path
-        let homeDirUsername = os.homedir().split('\\')[2];
-        if (fs.readdirSync(`${data.game.path[0]}:/Users/${homeDirUsername}/`)) {
-            if (fs.readdirSync(`${data.game.path[0]}:/Users/${homeDirUsername}/Documents/assettocorsa`)) {
-                // assettocorsa exists in documents
-                log('directory exists');
+        var baseuid = os.homedir().split('\\')[2];
+        if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/`)) {
+            if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`)) {
+
+                // 'assettocorsa' exists in documents folder
+                documentsDirUser = `${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`;
+                documentsDir = documentsDirUser;
+                win.webContents.send('documentPathStatus', {msg: documentsDir});
             };
         }
-        else if (!fs.readdirSync(`${data.game.path[0]}:/Users/${homeDirUsername}/`)) {
-            log('invalid user');
+        else if (!fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/`)) {
+            win.webContents.send('notification', {title: 'Cannot Find Documents Path', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
         }
-        else if (!fs.readdirSync(`${data.game.path[0]}:/Users/${homeDirUsername}/Documents/assettocorsa`)) {
-            log('directory does not exist');
+        else if (!fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`)) {
+            win.webContents.send('notification', {title: 'Cannot Find Documents Path', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
         };
 
     };
@@ -198,7 +202,11 @@ ipcMain.on('documentsPathMount', () => {
         // Path does not contain the 'Documents' query
         win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
     }
-    else if (documentsDirUser[0].includes('Documents') || documentsDirUser[0].includes('assettocorsa')) {
+    else if (documentsDirUser[0].includes('assettocorsa') == false) {
+        // Path does not contain the 'assettocorsa' query
+        win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
+    }
+    else if (documentsDirUser[0].includes('Documents') && documentsDirUser[0].includes('assettocorsa')) {
         // Correct path has been chosen
         win.webContents.send('documentPathStatus', {msg: documentsDirUser});
         documentsDir = documentsDirUser;
@@ -247,11 +255,12 @@ ipcMain.on('getCurrent', (event, thing) => {
     win.webContents.send('btnReact', 'go');
 });
 
+// Request boolean value for notifications from appStorage
 ipcMain.on('notisChange', async (event, bool) => {
-    // Request boolean value for notifications from appStorage
     notisChoice = bool;
 });
 
+// Watch for button events
 ipcMain.on('syncButton', (event, foo) => {
 
     if (foo == 'start') {

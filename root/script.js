@@ -38,13 +38,17 @@ const check = (id, n) => {
 // });
 
 ipcRenderer.on('gamePathStatus', (event, arr) => {
+    
     document.getElementById('pathmount').innerHTML = arr.msg;
     // Save install path to appStorage
     appStorage.setItem('gameInstallDir', arr.msg);
 });
 
 ipcRenderer.on('documentPathStatus', (event, arr) => {
+    
     document.getElementById('documentmount').innerHTML = arr.msg;
+    // Save install path to appStorage
+    appStorage.setItem('documentsDir', arr.msg);
 });
 
 // DEPRECATED
@@ -166,6 +170,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Update game install path to what is in appStorage
     document.getElementById('pathmount').innerHTML = appStorage.getItem('gameInstallDir');
+
+    // Update game documents path to what is in appStorage
+    document.getElementById('documentmount').innerHTML = appStorage.getItem('gameInstallDir');
 
     // Configure checkboxes
     check('cb1', 'flSpec');
