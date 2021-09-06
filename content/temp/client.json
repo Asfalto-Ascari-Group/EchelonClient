@@ -61,5 +61,41 @@
         "basename": "dj_ford_spec_racer_gen2",
         "urlpath": "http://34.142.46.24:4645/assets/gtSpec/content/dj_ford_spec_racer_gen2.zip",
         "path": "E:\\Steam\\steamapps\\common\\assettocorsa\\content\\cars\\dj_ford_spec_racer_gen2.zip"
+    },
+    {
+        "namespace": "content",
+        "type": "cars",
+        "filename": "rss_formula_hybrid_2021.zip",
+        "ext": ".zip",
+        "basename": "rss_formula_hybrid_2021",
+        "urlpath": "http://35.223.123.5:4645/assets/flSpec/content/rss_formula_hybrid_2021.zip",
+        "path": "D:\\SteamLibrary\\AC\\steamapps\\common\\assettocorsa\\content\\cars\\rss_formula_hybrid_2021.zip"
+    },
+    {
+        "namespace": "content",
+        "type": "cars",
+        "filename": "gt4_aston_martin_vantage.zip",
+        "ext": ".zip",
+        "basename": "gt4_aston_martin_vantage",
+        "urlpath": "http://35.223.123.5:4645/assets/flSpec/content/gt4_aston_martin_vantage.zip",
+        "path": "D:\\SteamLibrary\\AC\\steamapps\\common\\assettocorsa\\content\\cars\\gt4_aston_martin_vantage.zip"
+    },
+    {
+        "namespace": "content",
+        "type": "cars",
+        "filename": "rss_formula_hybrid_2021.zip",
+        "ext": ".zip",
+        "basename": "rss_formula_hybrid_2021",
+        "urlpath": "http://35.223.123.5:4645/assets/flSpec/content/rss_formula_hybrid_2021.zip",
+        "path": "E:\\Steam\\steamapps\\common\\assettocorsa\\content\\cars\\content\\cars\\rss_formula_hybrid_2021.zip"
+    },
+    {
+        "namespace": "content",
+        "type": "cars",
+        "filename": "gt4_aston_martin_vantage.zip",
+        "ext": ".zip",
+        "basename": "gt4_aston_martin_vantage",
+        "urlpath": "http://35.223.123.5:4645/assets/flSpec/content/gt4_aston_martin_vantage.zip",
+        "path": "E:\\Steam\\steamapps\\common\\assettocorsa\\content\\cars\\content\\cars\\gt4_aston_martin_vantage.zip"
     }
 ]

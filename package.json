@@ -10,7 +10,10 @@
   "dependencies": {
     "decompress": "^4.2.1",
     "dotenv": "^10.0.0",
+    "drive-tools": "^0.0.20",
+    "drivelist": "^9.2.4",
     "electron-log": "^4.4.1",
+    "encoding-japanese": "^1.0.30",
     "fs": "0.0.1-security",
     "http": "^0.0.1-security",
     "shell": "^0.8.4",

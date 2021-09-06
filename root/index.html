@@ -159,12 +159,17 @@
                     <div class="cellHead globalFont">Settings</div>
                     <button class="syncSettingsExitIcon" onclick="settingsSyncFlip()">&#10006;</button>
 
+                    <div class="titleMount1">'assettocorsa' Steam Folder:</div>
                     <button class="mountButton" id="pathmountButton">Browse</button>
                     <div class="gamePathText" id="pathmount">gamePathText</div>
-                    <div id="noticeText"><b>Note: </b>This is the file path to your 'assettocorsa' steam directory, The executable location is NOT needed.</div>
+                    <!-- <div id="noticeText"><b>Note: </b>This is the file path to your 'assettocorsa' steam directory, The executable location is NOT needed.</div> -->
+
+                    <div class="titlemount2">'assettocorsa' Documents Folder:</div>
+                    <button class="documentsMountButton" id="documentsmountButton">Browse</button>
+                    <div class="documentsText" id="documentmount">DocumentsPath</div>
 
                     <input type="checkbox" class="checkboxes" id="notiCbx" name="notification" onchange="notificationChoice(this)">
-                    <label for="notiCbx" class="globalFont">Allow Notifications</label>
+                    <label for="notiCbx" class="notiCbxText">Allow Notifications</label>
                 </div>
             </div>
 

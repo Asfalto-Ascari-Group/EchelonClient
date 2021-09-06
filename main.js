@@ -6,41 +6,42 @@ const unzipper= require('unzipper');
 const http = require('http');
 const pth = require('path');
 const { time } = require('console');
+var os = require('os');
 
 require('dotenv').config();
 
 // Configure electron autoUpdater
-require('update-electron-app')({
-    repo: 'https://github.com/Asfalto-Ascari-Group/EchelonClient-Release-Stable',
-    updateInterval: '5 minutes',
-    logger: require('electron-log')
-});
+// require('update-electron-app')({
+//     repo: 'https://github.com/Asfalto-Ascari-Group/EchelonClient-Release-Stable',
+//     updateInterval: '5 minutes',
+//     logger: require('electron-log')
+// });
 
-autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-    const dialogOpts = {
-        type: 'info',
-        buttons: ['Restart', 'Later'],
-        title: 'Application Update',
-        message: process.platform === 'win32' ? releaseNotes : releaseName,
-        detail: 'A new version has been downloaded. Restart the application to apply the updates.'
-    };
+// autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+//     const dialogOpts = {
+//         type: 'info',
+//         buttons: ['Restart', 'Later'],
+//         title: 'Application Update',
+//         message: process.platform === 'win32' ? releaseNotes : releaseName,
+//         detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+//     };
 
-    dialog.showMessageBox(dialogOpts).then((returnValue) => {
-        if (returnValue.response === 0) autoUpdater.quitAndInstall();
-    });
-});
+//     dialog.showMessageBox(dialogOpts).then((returnValue) => {
+//         if (returnValue.response === 0) autoUpdater.quitAndInstall();
+//     });
+// });
 
-autoUpdater.on('error', msg => {
-    console.error('There was a problem updating the application');
-    console.error(msg);
-});
+// autoUpdater.on('error', msg => {
+//     console.error('There was a problem updating the application');
+//     console.error(msg);
+// });
 
-autoUpdater.on('checking-for-update', () => {
-    win.webContents.send('log', 'hit');
-});
+// autoUpdater.on('checking-for-update', () => {
+//     win.webContents.send('log', 'hit');
+// });
 
 // Define variable connection
-const socket = io(`http://34.142.46.24:4644`, {
+const socket = io(`http://35.223.123.5:4644`, {
     reconnection: true,
     pingTimeout: 1000,
     pingInterval: 1000,
@@ -53,6 +54,7 @@ const socket = io(`http://34.142.46.24:4644`, {
 var log = console.log.bind(console);
 var isPathFound = false;
 var gameInstallDir;
+var documentsDir;
 var isWindowOn = false;
 var notisChoice = false;
 var canHashMapBeFormatted = false;
@@ -114,14 +116,30 @@ ipcMain.on('windowLoad', (event, arr) => {
 
     // If game path is NOT found
     if (!data.game) {
-        win.webContents.send('pathStatus', {code: 404, msg: 'Game installation path not found'});
+        win.webContents.send('gamePathStatus', {code: 404, msg: 'Game installation path not found'});
         isPathFound = false;
     }
     // If game path is found
     else if (data.game.path) {
         gameInstallDir = data.game.path;
-        win.webContents.send('pathStatus', {code: 200, msg: gameInstallDir});
+        win.webContents.send('gamePathStatus', {code: 200, msg: gameInstallDir});
         isPathFound = true;
+
+        // Configure documents path
+        let homeDirUsername = os.homedir().split('\\')[2];
+        if (fs.readdirSync(`${data.game.path[0]}:/Users/${homeDirUsername}/`)) {
+            if (fs.readdirSync(`${data.game.path[0]}:/Users/${homeDirUsername}/Documents/assettocorsa`)) {
+                // assettocorsa exists in documents
+                log('directory exists');
+            };
+        }
+        else if (!fs.readdirSync(`${data.game.path[0]}:/Users/${homeDirUsername}/`)) {
+            log('invalid user');
+        }
+        else if (!fs.readdirSync(`${data.game.path[0]}:/Users/${homeDirUsername}/Documents/assettocorsa`)) {
+            log('directory does not exist');
+        };
+
     };
 
     // If server is connected
@@ -131,9 +149,10 @@ ipcMain.on('windowLoad', (event, arr) => {
     else if (!isServerConnected) {
         win.webContents.send('notification', {title: 'Echelon Lost Connection', content: `Awaiting server reconnection...`, type: 'bad', ms: 'none'});
     };
+
 });
 
-// User chooses their own game path
+// User chooses their steam game path
 ipcMain.on('gamePathMount', () => {
 
     // Give user choice to browse for assettocorsa directory
@@ -145,22 +164,46 @@ ipcMain.on('gamePathMount', () => {
     // Check chosen game path
     if (gameInstallDirUser == undefined || gameInstallDirUser == 'undefined' || gameInstallDirUser == '') {
         // null -- undefined, dialog closed out
-        win.webContents.send('pathStatus', {code: 406, msg: gameInstallDir});
-        // Send notification to user
+        win.webContents.send('gamePathStatus', {msg: gameInstallDir});
         win.webContents.send('notification', {title: 'Invalid Installation Path', content: `Please enter an installation path`, type: 'bad', ms: 10000});
     }
-    else if (gameInstallDirUser[0].includes('assettocorsa') == false) {
+    else if (!gameInstallDirUser[0].includes('assettocorsa')) {
         // false
-        win.webContents.send('pathStatus', {code: 206, msg: gameInstallDir});
-        // Send notification to user
+        win.webContents.send('gamePathStatus', {msg: gameInstallDir});
         win.webContents.send('notification', {title: 'Invalid Installation Path', content: `Please enter an installation path that contains the 'assettocorsa' directory`, type: 'bad', ms: 10000});
     }
     else if (gameInstallDirUser[0].includes('assettocorsa')) {
         // true
-        win.webContents.send('pathStatus', {code: 200, msg: gameInstallDirUser});
+        win.webContents.send('gamePathStatus', {msg: gameInstallDirUser});
         gameInstallDir = gameInstallDirUser;
     };
-    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#client_error_responses
+
+});
+
+// User chooses their documents game path
+ipcMain.on('documentsPathMount', () => {
+
+    // Open dialog box
+    documentsDirUser = dialog.showOpenDialogSync(win, {
+        title: 'Choose "assettocorsa" file path',
+        properties: ['openDirectory']
+    });
+
+    // Check chosen path
+    if (documentsDirUser == undefined || documentsDirUser == 'undefined' || documentsDirUser == '') {
+        // null, error, dialog closed out
+        win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
+    }
+    else if (documentsDirUser[0].includes('Documents') == false) {
+        // Path does not contain the 'Documents' query
+        win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
+    }
+    else if (documentsDirUser[0].includes('Documents') || documentsDirUser[0].includes('assettocorsa')) {
+        // Correct path has been chosen
+        win.webContents.send('documentPathStatus', {msg: documentsDirUser});
+        documentsDir = documentsDirUser;
+    };
+
 });
 
 // Fired when the notification bool value has been changed on the renderer
@@ -353,7 +396,7 @@ socket.on('versionCheck', (serverArr) => {
 
             // Notify user that a racing series is out of date
             if (chosenModules.includes(moduleName.type) == false) {
-                win.webContents.send('notification', {title: 'Racing Series Out of Date', content: `Please sync the following: ${array.join()}`, type: 'bad', ms: 10000});
+                // win.webContents.send('notification', {title: 'Racing Series Out of Date', content: `Please sync the following: ${array.join()}`, type: 'bad', ms: 10000});
             };
             win.webContents.send('sendSeriesVersion', {module: moduleName, bool: 'bad'});
         }

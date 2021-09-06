@@ -28,6 +28,26 @@ html {
     margin-top: -16px; 
 }
 
+.titleMount1 {
+    display: absolute;
+    position: absolute;
+    margin-top: 21px;
+    font-weight: lighter;
+    font-family: 'AsfaltoMeticulaRegular', sans-serif;
+    font-size: 13px;
+    color: white;
+}
+
+.titlemount2 {
+    display: absolute;
+    position: absolute;
+    margin-top: 20px;
+    font-weight: lighter;
+    font-family: 'AsfaltoMeticulaRegular', sans-serif;
+    font-size: 13px;
+    color: white;
+}
+
 .gamePathText {
     position: relative;
     text-align: left;
@@ -35,7 +55,7 @@ html {
     font-size: 70%;
     font-weight: lighter;
     font-family: 'AsfaltoMeticulaRegular', sans-serif;
-    margin-top: 39px;
+    margin-top: 48px;
     margin-left: 60px;
     overflow-wrap: anywhere;
 }
@@ -51,11 +71,42 @@ html {
     font-weight: lighter;
     font-family: 'AsfaltoMeticulaRegular', sans-serif;
     font-size: 12px;
-    margin-top: 40px;
+    margin-top: 50px;
     transition: 0.05s ease-in-out;
 }
 
+.documentsMountButton {
+    display: absolute;
+    -webkit-app-region: no-drag;
+    background-color: white;
+    border-radius: 3px;
+    border: none;
+    width: 50px;
+    height: 20px;
+    font-weight: lighter;
+    font-family: 'AsfaltoMeticulaRegular', sans-serif;
+    font-size: 12px;
+    margin-top: 49px;
+    transition: 0.05s ease-in-out;
+}
+
+.documentsText {
+    display: absolute;
+    text-align: left;
+    color: white;
+    font-size: 70%;
+    font-weight: lighter;
+    font-family: 'AsfaltoMeticulaRegular', sans-serif;
+    margin-top: -22px;
+    margin-left: 60px;
+    overflow-wrap: anywhere;
+}
+
 .mountButton:hover {
+    background-color: rgba(255, 255, 255, 0.267);
+}
+
+.documentsMountButton:hover {
     background-color: rgba(255, 255, 255, 0.267);
 }
 
@@ -682,7 +733,18 @@ svg * {
 }
 
 #notiCbx {
-    margin-top: 25px;
+    display: absolute;
+    position: absolute;
+    margin-top: 40px;
+}
+
+.notiCbxText {
+    display: absolute;
+    position: absolute;
+    margin-top: 37px;
+    margin-left: 25px;
+    color: white;
+    font-family: 'MT-Semibold';
 }
 
 #noticeText {

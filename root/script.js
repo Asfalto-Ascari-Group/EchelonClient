@@ -37,12 +37,14 @@ const check = (id, n) => {
 //     ipcMain.send('resLocalStorage', array);
 // });
 
-ipcRenderer.on('pathStatus', (event, arr) => {
+ipcRenderer.on('gamePathStatus', (event, arr) => {
     document.getElementById('pathmount').innerHTML = arr.msg;
+    // Save install path to appStorage
+    appStorage.setItem('gameInstallDir', arr.msg);
 });
 
-ipcRenderer.on('log', (event, msg) => {
-    log(msg);
+ipcRenderer.on('documentPathStatus', (event, arr) => {
+    document.getElementById('documentmount').innerHTML = arr.msg;
 });
 
 // DEPRECATED
@@ -91,9 +93,14 @@ ipcRenderer.on('currentInstallPath', (event, path) => {
     document.getElementById('demoText2').innerHTML = '..' + path.split('\\common')[1].replace(/\\/g, '/');
 });
 
-// Mount sends path back to ipcMain when user chooses a path
+// Mount sends path back to ipcMain when user chooses a steam path
 document.getElementById('pathmountButton').addEventListener('click', () => {
     ipcRenderer.send('gamePathMount');
+});
+
+// Mount sends path back to ipcMain when user chooses a document path
+document.getElementById('documentsmountButton').addEventListener('click', () => {
+    ipcRenderer.send('documentsPathMount');
 });
 
 document.getElementById('btnClose').addEventListener('click', () => {
@@ -156,6 +163,9 @@ window.addEventListener('DOMContentLoaded', () => {
         };
         ipcRenderer.send('racingSeries', {type: item, value: bool});
     };
+
+    // Update game install path to what is in appStorage
+    document.getElementById('pathmount').innerHTML = appStorage.getItem('gameInstallDir');
 
     // Configure checkboxes
     check('cb1', 'flSpec');
