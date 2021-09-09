@@ -1,4 +1,4 @@
 node_modules
 echelon-win32-x64
 echelon-win32-x64.zip
-client.json*
+EchelonClient-Release-Stable\content\temp\client.json
