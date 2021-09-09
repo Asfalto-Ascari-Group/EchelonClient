@@ -126,23 +126,23 @@ ipcMain.on('windowLoad', (event, arr) => {
         win.webContents.send('gamePathStatus', {code: 200, msg: gameInstallDir});
         isPathFound = true;
 
-        // Configure documents path
-        var baseuid = os.homedir().split('\\')[2];
-        if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/`)) {
-            if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`)) {
+        // // Configure documents path
+        // var baseuid = os.homedir().split('\\')[2];
+        // if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/`)) {
+        //     if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`)) {
 
-                // 'assettocorsa' exists in documents folder
-                documentsDirUser = `${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`;
-                documentsDir = documentsDirUser;
-                win.webContents.send('documentPathStatus', {msg: documentsDir});
-            };
-        }
-        else if (!fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/`)) {
-            win.webContents.send('notification', {title: 'Cannot Find Documents Path', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
-        }
-        else if (!fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`)) {
-            win.webContents.send('notification', {title: 'Cannot Find Documents Path', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
-        };
+        //         // 'assettocorsa' exists in documents folder
+        //         documentsDirUser = `${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`;
+        //         documentsDir = documentsDirUser;
+        //         win.webContents.send('documentPathStatus', {msg: documentsDir});
+        //     };
+        // }
+        // else if (!fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/`)) {
+        //     win.webContents.send('notification', {title: 'Cannot Find Documents Path', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
+        // }
+        // else if (!fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`)) {
+        //     win.webContents.send('notification', {title: 'Cannot Find Documents Path', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
+        // };
 
     };
 
