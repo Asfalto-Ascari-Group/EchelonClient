@@ -321,8 +321,6 @@ function settingsSyncFlip() {
     topelem.style.opacity = 1;
 };
 
-document.getElementById('demoText').innerHTML = '5%'
-
 ipcRenderer.on('btnReact', (event, type) => {
 
     if (type == 'go') {

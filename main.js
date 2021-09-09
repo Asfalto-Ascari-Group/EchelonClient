@@ -169,17 +169,30 @@ ipcMain.on('gamePathMount', () => {
     if (gameInstallDirUser == undefined || gameInstallDirUser == 'undefined' || gameInstallDirUser == '') {
         // null -- undefined, dialog closed out
         win.webContents.send('gamePathStatus', {msg: gameInstallDir});
-        win.webContents.send('notification', {title: 'Invalid Installation Path', content: `Please enter an installation path`, type: 'bad', ms: 10000});
+        win.webContents.send('notification', {title: 'Invalid Installation Path', content: `Please enter a steam installation path`, type: 'bad', ms: 10000});
     }
     else if (!gameInstallDirUser[0].includes('assettocorsa')) {
         // false
         win.webContents.send('gamePathStatus', {msg: gameInstallDir});
-        win.webContents.send('notification', {title: 'Invalid Installation Path', content: `Please enter an installation path that contains the 'assettocorsa' directory`, type: 'bad', ms: 10000});
+        win.webContents.send('notification', {title: 'Invalid Installation Path', content: `Please enter a steam installation path that contains the 'assettocorsa' directory`, type: 'bad', ms: 10000});
     }
     else if (gameInstallDirUser[0].includes('assettocorsa')) {
-        // true
-        win.webContents.send('gamePathStatus', {msg: gameInstallDirUser});
-        gameInstallDir = gameInstallDirUser;
+        if (!gameInstallDirUser[0].includes('Documents')) {
+
+            let checkForSub = gameInstallDirUser[0].split('assettocorsa');
+            if (checkForSub[1]) {
+                gameInstallDir = `${checkForSub[0]}assettocorsa`;
+                win.webContents.send('gamePathStatus', {msg: gameInstallDir});
+            }
+            else if (!checkForSub[1]) {
+                // true
+                win.webContents.send('gamePathStatus', {msg: gameInstallDirUser});
+                gameInstallDir = gameInstallDirUser;
+            };
+        }
+        else if (!gameInstallDirUser[0].includes('Documents')) {
+            win.webContents.send('notification', {title: 'Invalid Installation Path', content: `Please enter a steam installation path that contains the 'assettocors' directory`, type: 'bad', ms: 10000});
+        };
     };
 
 });
@@ -250,7 +263,7 @@ ipcMain.on('cout', (event, arr) => {
 });
 
 // Request files from server in json format
-ipcMain.on('getCurrent', (event, thing) => {
+ipcMain.on('getCurrent', (event) => {
     socket.emit('getCurrent', {modules: chosenModules});
     win.webContents.send('btnReact', 'go');
 });
@@ -344,7 +357,7 @@ socket.on('currentServerResponse', (arr) => {
                     // Increment loop/progress counter
                     counter++;
                     totalPercent = totalPercent + percentTerm;
-                    win.webContents.send('downloadProgress', totalPercent);
+                    win.webContents.send('downloadProgress', Math.trunc(totalPercent));
                 };
 
                 // If all items on respective module have finished downloading
