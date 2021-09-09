@@ -198,34 +198,33 @@ ipcMain.on('gamePathMount', () => {
 });
 
 // User chooses their documents game path
-ipcMain.on('documentsPathMount', () => {
+// ipcMain.on('documentsPathMount', () => {
 
-    // Open dialog box
-    documentsDirUser = dialog.showOpenDialogSync(win, {
-        title: 'Choose "assettocorsa" file path',
-        properties: ['openDirectory']
-    });
+//     // Open dialog box
+//     documentsDirUser = dialog.showOpenDialogSync(win, {
+//         title: 'Choose "assettocorsa" file path',
+//         properties: ['openDirectory']
+//     });
 
-    // Check chosen path
-    if (documentsDirUser == undefined || documentsDirUser == 'undefined' || documentsDirUser == '') {
-        // null, error, dialog closed out
-        win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
-    }
-    else if (documentsDirUser[0].includes('Documents') == false) {
-        // Path does not contain the 'Documents' query
-        win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
-    }
-    else if (documentsDirUser[0].includes('assettocorsa') == false) {
-        // Path does not contain the 'assettocorsa' query
-        win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
-    }
-    else if (documentsDirUser[0].includes('Documents') && documentsDirUser[0].includes('assettocorsa')) {
-        // Correct path has been chosen
-        win.webContents.send('documentPathStatus', {msg: documentsDirUser});
-        documentsDir = documentsDirUser;
-    };
-
-});
+//     // Check chosen path
+//     if (documentsDirUser == undefined || documentsDirUser == 'undefined' || documentsDirUser == '') {
+//         // null, error, dialog closed out
+//         win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
+//     }
+//     else if (documentsDirUser[0].includes('Documents') == false) {
+//         // Path does not contain the 'Documents' query
+//         win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
+//     }
+//     else if (documentsDirUser[0].includes('assettocorsa') == false) {
+//         // Path does not contain the 'assettocorsa' query
+//         win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
+//     }
+//     else if (documentsDirUser[0].includes('Documents') && documentsDirUser[0].includes('assettocorsa')) {
+//         // Correct path has been chosen
+//         win.webContents.send('documentPathStatus', {msg: documentsDirUser});
+//         documentsDir = documentsDirUser;
+//     };
+// });
 
 // Fired when the notification bool value has been changed on the renderer
 ipcMain.on('notisChange', async (event, bool) => {

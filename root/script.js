@@ -172,7 +172,7 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('pathmount').innerHTML = appStorage.getItem('gameInstallDir');
 
     // Update game documents path to what is in appStorage
-    document.getElementById('documentmount').innerHTML = appStorage.getItem('gameInstallDir');
+    // document.getElementById('documentmount').innerHTML = appStorage.getItem('gameInstallDir');
 
     // Configure checkboxes
     check('cb1', 'flSpec');
@@ -198,6 +198,10 @@ window.addEventListener('DOMContentLoaded', () => {
     
         document.getElementById('demoText2').style.display = 'inline-block';
         document.getElementById('demoText2').style.marginTop = '45px';
+
+        document.getElementById('titlemount2').style.display = 'none';
+        document.getElementById('documentsmountButton').style.display = 'none';
+        document.getElementById('documentmount').style.display = 'none';
 
         // remove this to see series versions
         document.getElementById('seriesVersionsContainer').style.display = 'none';
