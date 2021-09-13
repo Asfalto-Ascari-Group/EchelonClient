@@ -1,12 +1,24 @@
-const { BrowserWindow, app, ipcMain, autoUpdater, dialog, Notification } = require('electron');
-const { io } = require('socket.io-client');
+const {
+    BrowserWindow,
+    app,
+    ipcMain,
+    autoUpdater,
+    dialog,
+    Notification
+} = require('electron');
+const {
+    io
+} = require('socket.io-client');
 const fs = require('fs');
-const { getGamePath } = require('steam-game-path');
-const unzipper= require('unzipper');
+const {
+    getGamePath
+} = require('steam-game-path');
+const unzipper = require('unzipper');
 const http = require('http');
 const pth = require('path');
-const { time } = require('console');
-var os = require('os');
+const {
+    time
+} = require('console');
 
 require('dotenv').config();
 
@@ -116,14 +128,20 @@ ipcMain.on('windowLoad', (event, arr) => {
 
     // If game path is NOT found
     if (!data.game) {
-        win.webContents.send('gamePathStatus', {code: 404, msg: 'Game installation path not found'});
+        win.webContents.send('gamePathStatus', {
+            code: 404,
+            msg: 'Game installation path not found'
+        });
         isPathFound = false;
     }
 
     // If game path is found
     else if (data.game.path) {
         gameInstallDir = data.game.path;
-        win.webContents.send('gamePathStatus', {code: 200, msg: gameInstallDir});
+        win.webContents.send('gamePathStatus', {
+            code: 200,
+            msg: gameInstallDir
+        });
         isPathFound = true;
 
         // // Configure documents path
@@ -148,10 +166,19 @@ ipcMain.on('windowLoad', (event, arr) => {
 
     // If server is connected
     if (isServerConnected) {
-        win.webContents.send('notification', {title: 'Echelon Connected', content: `Echelon successfully connected to the server`, type: 'good', ms: 6000});
-    }
-    else if (!isServerConnected) {
-        win.webContents.send('notification', {title: 'Echelon Lost Connection', content: `Awaiting server reconnection...`, type: 'bad', ms: 'none'});
+        win.webContents.send('notification', {
+            title: 'Echelon Connected',
+            content: `Echelon successfully connected to the server`,
+            type: 'good',
+            ms: 6000
+        });
+    } else if (!isServerConnected) {
+        win.webContents.send('notification', {
+            title: 'Echelon Lost Connection',
+            content: `Awaiting server reconnection...`,
+            type: 'bad',
+            ms: 'none'
+        });
     };
 
 });
@@ -168,30 +195,49 @@ ipcMain.on('gamePathMount', () => {
     // Check chosen game path
     if (gameInstallDirUser == undefined || gameInstallDirUser == 'undefined' || gameInstallDirUser == '') {
         // null -- undefined, dialog closed out
-        win.webContents.send('gamePathStatus', {msg: gameInstallDir});
-        win.webContents.send('notification', {title: 'Invalid Installation Path', content: `Please enter a steam installation path`, type: 'bad', ms: 10000});
-    }
-    else if (!gameInstallDirUser[0].includes('assettocorsa')) {
+        win.webContents.send('gamePathStatus', {
+            msg: gameInstallDir
+        });
+        win.webContents.send('notification', {
+            title: 'Invalid Installation Path',
+            content: `Please enter a steam installation path`,
+            type: 'bad',
+            ms: 10000
+        });
+    } else if (!gameInstallDirUser[0].includes('assettocorsa')) {
         // false
-        win.webContents.send('gamePathStatus', {msg: gameInstallDir});
-        win.webContents.send('notification', {title: 'Invalid Installation Path', content: `Please enter a steam installation path that contains the 'assettocorsa' directory`, type: 'bad', ms: 10000});
-    }
-    else if (gameInstallDirUser[0].includes('assettocorsa')) {
+        win.webContents.send('gamePathStatus', {
+            msg: gameInstallDir
+        });
+        win.webContents.send('notification', {
+            title: 'Invalid Installation Path',
+            content: `Please enter a steam installation path that contains the 'assettocorsa' directory`,
+            type: 'bad',
+            ms: 10000
+        });
+    } else if (gameInstallDirUser[0].includes('assettocorsa')) {
         if (!gameInstallDirUser[0].includes('Documents')) {
 
             let checkForSub = gameInstallDirUser[0].split('assettocorsa');
             if (checkForSub[1]) {
                 gameInstallDir = `${checkForSub[0]}assettocorsa`;
-                win.webContents.send('gamePathStatus', {msg: gameInstallDir});
-            }
-            else if (!checkForSub[1]) {
+                win.webContents.send('gamePathStatus', {
+                    msg: gameInstallDir
+                });
+            } else if (!checkForSub[1]) {
                 // true
-                win.webContents.send('gamePathStatus', {msg: gameInstallDirUser});
+                win.webContents.send('gamePathStatus', {
+                    msg: gameInstallDirUser
+                });
                 gameInstallDir = gameInstallDirUser;
             };
-        }
-        else if (!gameInstallDirUser[0].includes('Documents')) {
-            win.webContents.send('notification', {title: 'Invalid Installation Path', content: `Please enter a steam installation path that contains the 'assettocors' directory`, type: 'bad', ms: 10000});
+        } else if (!gameInstallDirUser[0].includes('Documents')) {
+            win.webContents.send('notification', {
+                title: 'Invalid Installation Path',
+                content: `Please enter a steam installation path that contains the 'assettocors' directory`,
+                type: 'bad',
+                ms: 10000
+            });
         };
     };
 
@@ -234,13 +280,12 @@ ipcMain.on('notisChange', async (event, bool) => {
 
 // Listen for series change on the renderer and store array
 ipcMain.on('racingSeries', (event, arr) => {
-    
+
     if (arr.value == true) {
         if (!chosenModules.filter(e => e === arr.type).length > 0) {
             chosenModules.push(arr.type);
         };
-    }
-    else if (arr.value == false) {
+    } else if (arr.value == false) {
         if (chosenModules.filter(e => e == arr.type).length > 0) {
             removeItemOnce(chosenModules, arr.type);
         };
@@ -263,7 +308,9 @@ ipcMain.on('cout', (event, arr) => {
 
 // Request files from server in json format
 ipcMain.on('getCurrent', (event) => {
-    socket.emit('getCurrent', {modules: chosenModules});
+    socket.emit('getCurrent', {
+        modules: chosenModules
+    });
     win.webContents.send('btnReact', 'go');
 });
 
@@ -277,8 +324,7 @@ ipcMain.on('syncButton', (event, foo) => {
 
     if (foo == 'start') {
         win.webContents.send('buttonStart');
-    }
-    else if (foo == 'stop') {
+    } else if (foo == 'stop') {
         const options = {
             buttons: ['Cancel', 'Yes, please', 'No, thanks'],
             defaultId: 2,
@@ -288,12 +334,12 @@ ipcMain.on('syncButton', (event, foo) => {
         };
 
         dialog.showMessageBox(options)
-        .then(result => {
-            if (result.response == 1) {
-                win.webContents.send('buttonStop');
-                isDownloadStopped = true;
-            };
-        });
+            .then(result => {
+                if (result.response == 1) {
+                    win.webContents.send('buttonStop');
+                    isDownloadStopped = true;
+                };
+            });
     };
 });
 
@@ -306,7 +352,7 @@ socket.on('currentServerResponse', (arr) => {
     };
     var counter = 0;
     var itemCount = json.length;
-    var percentTerm = 100/itemCount;
+    var percentTerm = 100 / itemCount;
     var totalPercent = 0;
 
     // DOWNLOAD PORTION
@@ -320,13 +366,18 @@ socket.on('currentServerResponse', (arr) => {
         // Start file download
         var req = http.get(item.urlpath, (res) => {
 
+            // Emit server event
+            socket.emit("cout", `Download Started: "${item.filename}" `);
+
             // Direct download stream to unzipper module
             res.pipe(
-                unzipper.Extract({path: `${gameInstallDir}/content/${item.type}/`})
+                unzipper.Extract({
+                    path: `${gameInstallDir}/content/${item.type}/`
+                })
             );
 
             res.on('close', () => {
-                
+
                 // Send current download path to renderer
                 let path = `${gameInstallDir}/${item.filename}`;
                 win.webContents.send('currentInstallPath', path);
@@ -349,7 +400,7 @@ socket.on('currentServerResponse', (arr) => {
                         path: `${gameInstallDir}\\content\\${item.type}\\${item.filename}`
                     });
 
-                    fs.writeFileSync(pth.join(__dirname, './content/temp/client.json'), JSON.stringify(hashMapFinal, null, 4));
+                    // fs.writeFileSync('./content/temp/client.json', JSON.stringify(hashMapFinal, null, 4));
                 };
 
                 if (!isDownloadStopped) {
@@ -377,23 +428,23 @@ socket.on('currentServerResponse', (arr) => {
                     };
 
                     // Get and set the new client version
-                    var clientVersion = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/clientVersion.json')).toString());
+                    // var clientVersion = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/clientVersion.json')).toString());
 
-                    // let serverVersion = arr.version[id].version;
-                    // clientVersion[id].version = serverVersion;
-                    fs.writeFileSync(pth.join(__dirname, './content/temp/clientVersion.json'), JSON.stringify(clientVersion, null, 4));
+                    // // let serverVersion = arr.version[id].version;
+                    // // clientVersion[id].version = serverVersion;
+                    // fs.writeFileSync(pth.join(__dirname, './content/temp/clientVersion.json'), JSON.stringify(clientVersion, null, 4));
 
-                    // HASHMAP PORTION (where appplicable)
-                    // Determine what modules have been unticked and delete all items that are under the respective module
-                    var clientHashMap = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/client.json')));
-                    for (item of clientHashMap) {
-                        // if the item has a namespace that is inside of the chosenModules array
-                        // -- delete files BEFORE then text on screen then the hash map
+                    // // HASHMAP PORTION (where appplicable)
+                    // // Determine what modules have been unticked and delete all items that are under the respective module
+                    // var clientHashMap = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/client.json')));
+                    // for (item of clientHashMap) {
+                    //     // if the item has a namespace that is inside of the chosenModules array
+                    //     // -- delete files BEFORE then text on screen then the hash map
 
-                        if (item.namespace == 'flSpec') {
-                            // log(item.filename)
-                        };
-                    };
+                    //     if (item.namespace == 'flSpec') {
+                    //         // log(item.filename)
+                    //     };
+                    // };
 
                 };
             });
@@ -419,13 +470,18 @@ socket.on('versionCheck', (serverArr) => {
             if (chosenModules.includes(moduleName.type) == false) {
                 // win.webContents.send('notification', {title: 'Racing Series Out of Date', content: `Please sync the following: ${array.join()}`, type: 'bad', ms: 10000});
             };
-            win.webContents.send('sendSeriesVersion', {module: moduleName, bool: 'bad'});
-        }
-        else if (serverArr[item].version == clientVersion[item].version) {
+            win.webContents.send('sendSeriesVersion', {
+                module: moduleName,
+                bool: 'bad'
+            });
+        } else if (serverArr[item].version == clientVersion[item].version) {
 
             // If versions do match then change html content accordingly
             const id = serverArr[item];
-            win.webContents.send('sendSeriesVersion', {module: id, bool: 'good'});
+            win.webContents.send('sendSeriesVersion', {
+                module: id,
+                bool: 'good'
+            });
         };
     };
 });
@@ -434,10 +490,14 @@ socket.on('versionCheck', (serverArr) => {
 socket.on('connect', () => {
     log('Connected to Server');
     if (isWindowOn) {
-        win.webContents.send('notification', {title: 'Echelon Connected', content: `Echelon successfully connected to the server`, type: 'good', ms: 6000});
+        win.webContents.send('notification', {
+            title: 'Echelon Connected',
+            content: `Echelon successfully connected to the server`,
+            type: 'good',
+            ms: 6000
+        });
         isDownloadStopped = false;
-    }
-    else if (!isWindowOn) {
+    } else if (!isWindowOn) {
         isServerConnected = true;
     };
 });
@@ -446,10 +506,14 @@ socket.on('connect', () => {
 socket.on('connect_error', (err) => {
     log('Server not available, Retrying...');
     if (isWindowOn) {
-        win.webContents.send('notification', {title: 'Echelon Lost Connection', content: `Awaiting server reconnection...`, type: 'bad', ms: 'none'});
+        win.webContents.send('notification', {
+            title: 'Echelon Lost Connection',
+            content: `Awaiting server reconnection...`,
+            type: 'bad',
+            ms: 'none'
+        });
         isDownloadStopped = true;
-    }
-    else if (!isWindowOn) {
+    } else if (!isWindowOn) {
         isServerConnected = false;
     };
 });

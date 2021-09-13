@@ -203,6 +203,11 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('documentsmountButton').style.display = 'none';
         document.getElementById('documentmount').style.display = 'none';
 
+        document.getElementById('eventdot1').style.display = 'none';
+        document.getElementById('eventdot1full').style.display = 'none';
+        document.getElementById('eventdot2').style.display = 'none';
+        document.getElementById('eventdot2full').style.display = 'none';
+
         // remove this to see series versions
         document.getElementById('seriesVersionsContainer').style.display = 'none';
         document.getElementById('seriesNotification').style.display = 'none';

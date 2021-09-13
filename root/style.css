@@ -218,8 +218,11 @@ html {
 }
 
 #devMemberContent {
-    display: none;
+    display: inline-block;
     justify-content: left;
+    margin-left: 0px;
+    margin-right: 0px;
+    align-items: center;
     text-justify: inter-cluster;
     font-size: 13px;
     margin-top: 20px;
@@ -229,6 +232,7 @@ html {
     display: inherit;
     font-family: 'MT-Light';
     color: white;
+    margin: auto;
     margin-left: 0px;
     margin-right: 0px;
     margin-top: 70px;
@@ -462,6 +466,7 @@ html {
     position: absolute;
     width: auto;
     height: auto;
+    color: white;
     margin-left: 1035px;
     margin-top: -44px;
     padding: 10px;
@@ -482,6 +487,7 @@ html {
 .topBtnMin {
     position: absolute;
     width: auto;
+    color: white;
     margin-left: 1006px;
     margin-top: -43px;
     padding-left: 9px;
@@ -604,6 +610,7 @@ html {
     font-size: 19px;
     font-weight: 400;
     letter-spacing: 1px;
+    /* text-align: left; */
 }
 
 #cellHead2 {
@@ -611,13 +618,20 @@ html {
     font-size: 19px;
     font-weight: 400;
     letter-spacing: 1px;
-
 }
 
 .cellHead3 {
     font-size: 19px;
     font-weight: 400;
     letter-spacing: 1px;
+}
+
+.cellHead4 {
+    font-size: 19px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    margin-left: -40px;
+    /* text-align: left; */
 }
 
 input {
@@ -915,11 +929,9 @@ svg * {
 }
 
 .containerBR {
-    margin: auto;
     margin-top: calc(var(--mpos) + 10px);
     width: 76%;
     /* deprecated */
-    text-align: left;
     position: var(--pos);
 }
 
@@ -989,6 +1001,7 @@ svg * {
 }
 
 .columnBottomRight {
+    margin: auto;
     background-color: rgba(211, 209, 192, .1);
     width: 321px;
     grid-area: cell-5;
