@@ -578,8 +578,12 @@ html {
     font-family: 'MT-Light';
     font-weight: 500;
     float: right;
-    margin-top: 8px;
+    margin-top: 5px;
     margin-right: 28px;
+}
+
+#statusIcon {
+    font-size: 12px;
 }
 
 .userContainer {
@@ -948,9 +952,9 @@ svg * {
     margin-top: 20px;
 }
 
-#webkitDrag {
+/* #webkitDrag {
     -webkit-app-region: drag;
-}
+} */
 
 #webkitNoDrag {
     -webkit-app-region: no-drag;
@@ -991,7 +995,7 @@ svg * {
 
 .columnTopRight {
     grid-area: cell-3;
-    -webkit-app-region: drag;
+    /* -webkit-app-region: drag; */
 }
 
 .columnBottomLong {

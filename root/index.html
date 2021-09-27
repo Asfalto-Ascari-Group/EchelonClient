@@ -168,7 +168,7 @@
                     <button class="documentsMountButton" id="documentsmountButton">Browse</button>
                     <div class="documentsText" id="documentmount">DocumentsPath</div>
 
-                    <input type="checkbox" class="checkboxes" id="notiCbx" name="notification" onchange="notificationChoice(this)">
+                    <input type="checkbox" class="checkboxes" id="notiCbx" name="notification" onchange="clientNotificationChange(this)">
                     <label for="notiCbx" class="notiCbxText">Allow Notifications</label>
                 </div>
             </div>
@@ -556,6 +556,7 @@
     </div>
 
     <div id="footerText">
+        Server Connection <span id="statusIcon">🔴</span><br>
         Echelon_BETA
     </div>
 

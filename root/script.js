@@ -7,10 +7,13 @@ const modulesArr = ['flSpec', 'gtSpec', 'cSpec'];
 var userModulesArr = [];
 const eventArr = ['eventcontent1', 'eventcontent2'];
 const infoArr = ['infocontent1', 'infocontent2', 'infocontent3'];
+var notisQueue = [];
+var isQueueOpen = true;
 var eventCounter = 0;
 var infoCounter = 0;
 var releaseName;
 var canButtonBeUsed = true;
+var serverState = false;
 
 // Config appStorage entries
 const check = (id, n) => {
@@ -37,6 +40,7 @@ const check = (id, n) => {
 //     ipcMain.send('resLocalStorage', array);
 // });
 
+// Game install path listener
 ipcRenderer.on('gamePathStatus', (event, arr) => {
     
     document.getElementById('pathmount').innerHTML = arr.msg;
@@ -44,6 +48,7 @@ ipcRenderer.on('gamePathStatus', (event, arr) => {
     appStorage.setItem('gameInstallDir', arr.msg);
 });
 
+// Mod handler path listener
 ipcRenderer.on('documentPathStatus', (event, arr) => {
     
     document.getElementById('documentmount').innerHTML = arr.msg;
@@ -51,38 +56,26 @@ ipcRenderer.on('documentPathStatus', (event, arr) => {
     appStorage.setItem('documentsDir', arr.msg);
 });
 
-// DEPRECATED
-// ipcRenderer.on('serverState?', (event, rescode) => {
-//     // show respective pop-ups for user
-//     if (rescode === 404) {
-//         // 404 = 'Not Found';
-//         log('Reconnecting to server');
-//     }else if (rescode === 200) {
-//         // 200 = 'OK';
-//         log('Connected to server');
-//     };
-//     // Refer to https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#server_error_responses
-// });
-
-ipcRenderer.on('downloadState?', (event, rescode) => {
-    if (rescode === 200) {
-        log('download started');
-        // notify user that download has started
-    } else if (rescode === 206) {
-        log('download stopped');
-        // notify user that download has stopped
-    } else if (rescode === 201) {
-        log('download finished');
-        // turn start button opacity back to 1
-        const btnGo = document.getElementById('btnGo');
-        const btnGoTop = document.getElementById('btnGoTop');
+// ? DEPRECATED
+// ipcRenderer.on('downloadState?', (event, rescode) => {
+//     if (rescode === 200) {
+//         log('download started');
+//         // notify user that download has started
+//     } else if (rescode === 206) {
+//         log('download stopped');
+//         // notify user that download has stopped
+//     } else if (rescode === 201) {
+//         log('download finished');
+//         // turn start button opacity back to 1
+//         const btnGo = document.getElementById('btnGo');
+//         const btnGoTop = document.getElementById('btnGoTop');
         
-        btnGo.style.pointerEvents = 'auto';
-        btnGoTop.style.pointerEvents= 'auto';
-        btnGo.style.opacity = 1;
-        btnGoTop.style.opacity = 1;
-    };
-});
+//         btnGo.style.pointerEvents = 'auto';
+//         btnGoTop.style.pointerEvents= 'auto';
+//         btnGo.style.opacity = 1;
+//         btnGoTop.style.opacity = 1;
+//     };
+// });
 
 ipcRenderer.on('downloadProgress', (event, msg) => {
     document.getElementById('demoText').innerHTML = `${msg}%`;
@@ -107,25 +100,17 @@ document.getElementById('documentsmountButton').addEventListener('click', () => 
     ipcRenderer.send('documentsPathMount');
 });
 
+// Window close button event listener
 document.getElementById('btnClose').addEventListener('click', () => {
     remote.BrowserWindow.getFocusedWindow().close();
 });
+
+// Window minimize button event listener
 document.getElementById('btnMin').addEventListener('click', () => {
     remote.BrowserWindow.getFocusedWindow().minimize();
 });
 
-ipcRenderer.send('notisChange', appStorage.getItem('notifications'));
-
-ipcRenderer.on('notisStatus', () => {
-    ipcRenderer.send('notisStatusRes', appStorage.getItem('notifications'));
-});
-
-ipcRenderer.on('notification', (event, arr) => {
-    setTimeout(() => {
-        createNotification(arr.title, arr.content, arr.type, arr.ms);
-    }, 200);
-});
-
+// Listen for release name from main
 ipcRenderer.on('releaseName', (event, rel) => {
     releaseName = rel;
 });
@@ -148,13 +133,14 @@ ipcRenderer.on('sendSeriesVersionFin', (event, arr) => {
     };
 });
 
+ipcRenderer.on('serverState', (event, bool) => {
+    serverState = bool;
+});
+
 window.addEventListener('DOMContentLoaded', () => {
 
     // Send load event to ipcMain
-    ipcRenderer.send('windowLoad', {notis: appStorage.getItem('notifications')});
-
-    // Send notification state to ipcMain
-    ipcRenderer.send('notisChange', appStorage.getItem('notifications'));
+    ipcRenderer.send('windowLoad', {notis: appStorage.getItem('notifications') === 'true'});
 
     // Send all chosen modules to ipcMain
     for (item of modulesArr) {
@@ -243,9 +229,16 @@ function valueParse(elem) {
     };
 };
 
-function notificationChoice(elem) {
-    appStorage.setItem('notifications', elem.checked);
-    ipcRenderer.send('notisChange', elem.checked);
+function clientNotificationChange(elem) {
+
+    if (elem.checked) {
+        appStorage.setItem('notifications', true);
+        ipcRenderer.send('notisChange', false);
+    }
+    else if (!elem.checked) {
+        appStorage.setItem('notifications', false);
+        ipcRenderer.send('notisChange', false);
+    };
 };
 
 function menuFold(x) {
@@ -279,8 +272,46 @@ document.getElementById('githubClick').addEventListener('click', () => {
     createBrowserWindow('https://github.com/Asfalto-Ascari-Group/EchelonClient-Release-Stable/releases');
 });
 
+// Listen for notification event from main
+ipcRenderer.on('notification', (event, arr) => {
+    // createNotification(arr.title, arr.content, arr.type, arr.ms);
+    pushNotification(arr.title, arr.content, arr.type, arr.ms);
+});
+
+// Push content of notification to queue array
+function pushNotification(title, content, type, ms) {
+
+    // Push notification to queue array
+    notisQueue.push({
+        title: title,
+        content: content,
+        type: type,
+        ms: ms
+    });
+    // log(notisQueue);
+
+    // Check if container is in use
+    if (isQueueOpen) {
+        createNotification(title, content, type, ms);
+    };
+};
+
 // Create notification
 function createNotification(title, content, type, ms) {
+
+    // Block container
+    isQueueOpen = false;
+    
+    // -- if (indexOf == 0) {};
+    // --   false = show notification
+    // --   true = do not show
+
+    // -- containerBool { @bool };
+    // --   true = empty container
+    // --   false = container in use until debounce called
+
+
+    // Configure the notification
     var notification = document.getElementById('notification');
 
     if (type == 'good') {
@@ -294,11 +325,27 @@ function createNotification(title, content, type, ms) {
     document.getElementById('notificationTitle').innerHTML = title;
     document.getElementById('notificationSubtitle').innerHTML = content;
 
-    if (ms != 'none') {
+    // Notification debounce
+    if (ms != 0) {
         setTimeout(() => {
+
             notification.style.display = 'none';
+    
+            notisQueue.shift();
+            log(notisQueue);
+    
+            isQueueOpen = true;
+            // log(isQueueOpen);
+            
+            if (notisQueue[0]) {
+                let tname = notisQueue[0];
+                createNotification(tname.title, tname.content, tname.type, tname.ms);
+            };
+            
         }, ms);
     };
+
+    // If debounce is 0 then make it promise based (internal) - ???
 };
 
 var transDuration = 150;
@@ -392,13 +439,14 @@ ipcRenderer.on('buttonStart', () => {
             };
         };
     };
+    // ^ deprecated ?
 
     // Check if series has been selected initially
     if (array.length == 0) {
-        createNotification('Invalid Series Selection', 'Please choose a racing series to synchronise', 'bad', 10000)
+        pushNotification('Invalid Series Selection', 'Please choose a racing series to synchronise', 'bad', 10000)
     }
     else if (array.length != 0) {
-        ipcRenderer.send('getCurrent', {arr: array});
+        ipcRenderer.send('getCurrent', {arr: array, notis: appStorage.getItem('notifications')});
     };
 });
 

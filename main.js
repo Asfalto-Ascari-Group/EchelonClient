@@ -124,6 +124,8 @@ ipcMain.on('windowLoad', (event, arr) => {
     // Get game path
     var data = getGamePath(244210);
     isWindowOn = true;
+
+    // Client (windows) notification choice
     notisChoice = arr.notis;
 
     // If game path is NOT found
@@ -139,7 +141,6 @@ ipcMain.on('windowLoad', (event, arr) => {
     else if (data.game.path) {
         gameInstallDir = data.game.path;
         win.webContents.send('gamePathStatus', {
-            code: 200,
             msg: gameInstallDir
         });
         isPathFound = true;
@@ -165,21 +166,27 @@ ipcMain.on('windowLoad', (event, arr) => {
     };
 
     // If server is connected
-    if (isServerConnected) {
-        win.webContents.send('notification', {
-            title: 'Echelon Connected',
-            content: `Echelon successfully connected to the server`,
-            type: 'good',
-            ms: 6000
-        });
-    } else if (!isServerConnected) {
-        win.webContents.send('notification', {
-            title: 'Echelon Lost Connection',
-            content: `Awaiting server reconnection...`,
-            type: 'bad',
-            ms: 'none'
-        });
-    };
+    // if (isServerConnected) {
+    //     win.webContents.send('serverState', isServerConnected);
+
+    //     win.webContents.send('notification', {
+    //         title: 'Echelon Connected',
+    //         content: `Echelon successfully connected to the server`,
+    //         type: 'good',
+    //         ms: 6000
+    //     });
+        
+    // } else if (!isServerConnected) {
+    //     win.webContents.send('serverState', isServerConnected);
+
+    //     win.webContents.send('notification', {
+    //         title: 'Echelon Lost Connection',
+    //         content: `Awaiting server reconnection...`,
+    //         type: 'bad',
+    //         ms: 0
+    //     });
+
+    // };
 
 });
 
@@ -189,21 +196,25 @@ ipcMain.on('gamePathMount', () => {
     // Give user choice to browse for assettocorsa directory
     gameInstallDirUser = dialog.showOpenDialogSync(win, {
         title: 'Choose "assettocorsa" file path',
-        properties: ['openDirectory']
+        properties: ['openDirectory'],
+        defaultPath: `${gameInstallDir}`
     });
 
     // Check chosen game path
     if (gameInstallDirUser == undefined || gameInstallDirUser == 'undefined' || gameInstallDirUser == '') {
         // null -- undefined, dialog closed out
-        win.webContents.send('gamePathStatus', {
-            msg: gameInstallDir
-        });
-        win.webContents.send('notification', {
-            title: 'Invalid Installation Path',
-            content: `Please enter a steam installation path`,
-            type: 'bad',
-            ms: 10000
-        });
+        if (!gameInstallDir) {
+            win.webContents.send('gamePathStatus', {
+                msg: gameInstallDir
+            });
+            win.webContents.send('notification', {
+                title: 'Invalid Installation Path',
+                content: `Please enter a steam installation path`,
+                type: 'bad',
+                ms: 10000
+            });
+        };
+
     } else if (!gameInstallDirUser[0].includes('assettocorsa')) {
         // false
         win.webContents.send('gamePathStatus', {
@@ -240,7 +251,6 @@ ipcMain.on('gamePathMount', () => {
             });
         };
     };
-
 });
 
 // User chooses their documents game path
@@ -307,16 +317,12 @@ ipcMain.on('cout', (event, arr) => {
 });
 
 // Request files from server in json format
-ipcMain.on('getCurrent', (event) => {
+ipcMain.on('getCurrent', (event, arr) => {
     socket.emit('getCurrent', {
         modules: chosenModules
     });
     win.webContents.send('btnReact', 'go');
-});
-
-// Request boolean value for notifications from appStorage
-ipcMain.on('notisChange', async (event, bool) => {
-    notisChoice = bool;
+    notisChoice = arr.notis;
 });
 
 // Watch for button events
@@ -383,13 +389,14 @@ socket.on('currentServerResponse', (arr) => {
                 win.webContents.send('currentInstallPath', path);
 
                 // Check if entry exists on the client hash map already
-                var clientHashMap = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/client.json')));
+                // var clientHashMapPath = fs.readFileSync('./content/temp/client.json');
+                var clientHashMap = JSON.parse(fs.readFileSync(pth.join(__dirname, '\\content\\temp\\client.json')));
                 let dupe = clientHashMap.find(entry => entry.path.replace(/\\/g, "/") == `${gameInstallDir}\\content\\${item.type}\\${item.filename}`.replace(/\\/g, "/"));
 
                 // If the entry does not exist, then add the entry to the hash map
                 if (!dupe) {
 
-                    let hashMapFinal = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/client.json')));
+                    let hashMapFinal = JSON.parse(fs.readFileSync(pth.join(__dirname, 'content\\temp\\client.json')));
                     hashMapFinal.push({
                         namespace: id,
                         type: item.type,
@@ -400,7 +407,7 @@ socket.on('currentServerResponse', (arr) => {
                         path: `${gameInstallDir}\\content\\${item.type}\\${item.filename}`
                     });
 
-                    // fs.writeFileSync('./content/temp/client.json', JSON.stringify(hashMapFinal, null, 4));
+                    fs.writeFileSync(pth.join(__dirname, '.\\content\\temp\\client.json'), JSON.stringify(hashMapFinal, null, 4));
                 };
 
                 if (!isDownloadStopped) {
@@ -419,7 +426,7 @@ socket.on('currentServerResponse', (arr) => {
                         win.webContents.send('downloadDone', 'Finished!');
 
                         // Check for notification boolean
-                        if (notisChoice) {
+                        if (notisChoice == 'true') {
                             const notification = new Notification({
                                 title: `Echelon has Finished Syncing`,
                                 body: 'Your Assetto Corsa content is synchronised'
@@ -494,11 +501,12 @@ socket.on('connect', () => {
             title: 'Echelon Connected',
             content: `Echelon successfully connected to the server`,
             type: 'good',
-            ms: 6000
+            ms: 10000
         });
         isDownloadStopped = false;
     } else if (!isWindowOn) {
         isServerConnected = true;
+        win.webContents.send('serverState', isServerConnected);
     };
 });
 
@@ -510,10 +518,11 @@ socket.on('connect_error', (err) => {
             title: 'Echelon Lost Connection',
             content: `Awaiting server reconnection...`,
             type: 'bad',
-            ms: 'none'
+            ms: 10000
         });
         isDownloadStopped = true;
     } else if (!isWindowOn) {
         isServerConnected = false;
+        win.webContents.send('serverState', isServerConnected);
     };
 });
