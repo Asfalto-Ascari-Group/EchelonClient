@@ -135,6 +135,17 @@ ipcRenderer.on('sendSeriesVersionFin', (event, arr) => {
 
 ipcRenderer.on('serverState', (event, bool) => {
     serverState = bool;
+
+    if (serverState) {
+        // change to green
+        document.getElementById('statusIcon').innerHTML = '🟢';
+
+    }
+    else if (!serverState) {
+        // change to red
+        document.getElementById('statusIcon').innerHTML = '🔴';
+
+    };
 });
 
 window.addEventListener('DOMContentLoaded', () => {

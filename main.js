@@ -503,8 +503,8 @@ socket.on('connect', () => {
             type: 'good',
             ms: 10000
         });
+
         isDownloadStopped = false;
-    } else if (!isWindowOn) {
         isServerConnected = true;
         win.webContents.send('serverState', isServerConnected);
     };
@@ -520,8 +520,8 @@ socket.on('connect_error', (err) => {
             type: 'bad',
             ms: 10000
         });
+
         isDownloadStopped = true;
-    } else if (!isWindowOn) {
         isServerConnected = false;
         win.webContents.send('serverState', isServerConnected);
     };
