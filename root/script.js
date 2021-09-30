@@ -85,6 +85,10 @@ ipcRenderer.on('downloadDone', (event, msg) => {
     document.getElementById('demoText2').innerHTML = msg;
 });
 
+ipcRenderer.on('dlPath', (event, msg) => {
+    document.getElementById('demoText2').innerHTML = '...' + msg;
+});
+
 ipcRenderer.on('currentInstallPath', (event, path) => {
     // log('..' + path.split('\\common')[1].replace(/\\/g, '/'));
     document.getElementById('demoText2').innerHTML = '..' + path.split('\\common')[1].replace(/\\/g, '/');
