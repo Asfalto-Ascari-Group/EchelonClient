@@ -228,6 +228,9 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('nextArrowMid').style.pointerEvents = 'auto';
         document.getElementById('eventdot1').style.pointerEvents = 'auto';
         document.getElementById('eventdot2').style.pointerEvents = 'auto';
+
+        document.getElementById('demoText2').style.display = 'inline-block';
+        document.getElementById('demoText2').style.marginTop = '45px';
     };
 });
 
@@ -390,6 +393,25 @@ function settingsSyncFlip() {
     topelem.style.transition = `opacity .${transDuration}s`;
     setTimeout(() => {topelem.style.display = 'block';}, transDuration);
     topelem.style.opacity = 1;
+};
+
+function elipAnim() {
+
+    document.getElementById('demoText2').innerHTML = 'Starting download..'
+
+    setInterval(() => {
+        setTimeout(() => {
+            document.getElementById('demoText2').innerHTML = 'Starting download.'
+        }, 500);
+        setTimeout(() => {
+            document.getElementById('demoText2').innerHTML = 'Starting download..'
+        }, 500);
+        setTimeout(() => {
+            document.getElementById('demoText2').innerHTML = 'Starting download...'
+        }, 500);
+        
+    }, 650);
+
 };
 
 ipcRenderer.on('btnReact', (event, type) => {

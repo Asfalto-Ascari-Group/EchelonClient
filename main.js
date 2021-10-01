@@ -411,6 +411,7 @@ socket.on('currentServerResponse', async (arr) => {
 
         req.on('close', () => {
             win.webContents.send('dlPath', item.filename);
+            
             totalPercent = totalPercent + percentTerm;
             win.webContents.send('downloadProgress', Math.trunc(totalPercent));
             log(totalPercent)
