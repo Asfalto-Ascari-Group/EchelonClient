@@ -350,11 +350,6 @@ ipcMain.on('syncButton', (event, foo) => {
 });
 
 
-async function downloadItem(item, counter, percentTerm, totalPercent, json) {
-    
-};
-
-
 // Catch response json files from server
 socket.on('currentServerResponse', async (arr) => {
 
