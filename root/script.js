@@ -419,16 +419,20 @@ ipcRenderer.on('btnReact', (event, type) => {
     if (type == 'go') {
         const btnGo = document.getElementById('btnGo');
         const btnGoTop = document.getElementById('btnGoTop');
+        const btnGoText = document.getElementById('goButtonText');
     
         // Turn the button off
         btnGo.style.pointerEvents = 'none';
         btnGoTop.style.pointerEvents = 'none';
+        btnGoText.style.pointerEvents = 'none';
         btnGo.style.opacity = 0.3;
         btnGoTop.style.opacity = 0.3;
+        btnGoText.style.opacity = 0.3;
     
         // Return stop button back to normal
         document.getElementById('btnStop').style.opacity = 1;
         document.getElementById('btnStopTop').style.opacity = 1;
+        document.getElementById('btnStopText').style.opacity = 1;
 
         // Change innerHTML of progress text
         document.getElementById('demoText2').innerHTML = 'Starting download..'
@@ -437,12 +441,15 @@ ipcRenderer.on('btnReact', (event, type) => {
     else if (type == 'finish') {
         const btnGo = document.getElementById('btnGo');
         const btnGoTop = document.getElementById('btnGoTop');
+        const btnGoText = document.getElementById('goButtonText');
     
         // Turn the button off
         btnGo.style.pointerEvents = 'auto';
         btnGoTop.style.pointerEvents = 'auto';
+        btnGoText.style.pointerEvents = 'auto';
         btnGo.style.opacity = 1;
         btnGoTop.style.opacity = 1;
+        btnGoText.style.opacity = 1;
 
         // Revert boolean so button can be used again
         canButtonBeUsed = true;
@@ -495,21 +502,26 @@ ipcRenderer.on('buttonStop', () => {
 
     document.getElementById('btnStop').style.opacity = 0.3;
     document.getElementById('btnStopTop').style.opacity = 0.3;
+    document.getElementById('btnStopText').style.opacity = 0.3;
     document.getElementById('demoText').style.opacity = 0;
     document.getElementById('demoText2').style.opacity = 0;
 
     setTimeout(() => {
         document.getElementById('btnStop').style.opacity = 1;
         document.getElementById('btnStopTop').style.opacity = 1;
+        document.getElementById('btnStopText').style.opacity = 1;
 
         const btnGo = document.getElementById('btnGo');
         const btnGoTop = document.getElementById('btnGoTop');
+        const btnGoText = document.getElementById('btnGoText');
     
         // Turn the button off
         btnGo.style.pointerEvents = 'auto';
         btnGoTop.style.pointerEvents = 'auto';
+        btnGoText.style.pointerEvents = 'auto';
         btnGo.style.opacity = 1;
         btnGoTop.style.opacity = 1;
+        btnGoText.style.opacity = 1;
 
         // Revert boolean so button can be used again
         canButtonBeUsed = true;

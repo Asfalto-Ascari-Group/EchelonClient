@@ -172,7 +172,7 @@
                     <button class="documentsMountButton" id="documentsmountButton">Browse</button>
                     <div class="documentsText" id="documentmount">DocumentsPath</div>
 
-                    <input type="checkbox" class="checkboxes" id="notiCbx" name="notification" onchange="clientNotificationChange(this)">
+                    <input id="notiCbx" type="checkbox" name="notification" onchange="clientNotificationChange(this)">
                     <label for="notiCbx" class="notiCbxText">Allow Notifications</label>
                 </div>
             </div>
@@ -469,15 +469,15 @@
                 <div class="acontainer">
                     <div class="cellHead globalFont">Series Registration</div>
 
-                    <form class="reg" id="checkboxes">
+                    <form class="seriesReg" id="checkboxes">
                         <input type="checkbox" class="checkboxes" id="cb1" name="flSpec" onchange="valueParse(this)">
                         <label for="cb1" class="globalFont">Formula</label>
 
                         <input type="checkbox" class="checkboxes" id="cb2" name="gtSpec" onchange="valueParse(this)">
-                        <label for="cb2" class="globalFont">GT</label>
+                        <label style="margin-left: 30px;" for="cb2" class="globalFont">GT</label>
 
                         <input type="checkbox" class="checkboxes" id="cb3" name="cSpec" onchange="valueParse(this)">
-                        <label for="cb3" class="globalFont">Indy</label>
+                        <label style="margin-left: 30px;" for="cb3" class="globalFont">Indy</label>
                     </form>
 
                     <div class="seriesVersionsContainer" id="seriesVersionsContainer">

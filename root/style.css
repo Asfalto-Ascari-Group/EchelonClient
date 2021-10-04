@@ -8,14 +8,6 @@ html {
     -webkit-app-region: drag;
 }
 
-#cb2 {
-    margin-left: 15px;
-}
-
-#cb3 {
-    margin-left: 15px;
-}
-
 #headerIcon {
     width: 240px;
 }
@@ -557,12 +549,12 @@ html {
 
 #stopButtonText {
     position: absolute;
-    color: white;
+    color: rgb(33, 33, 33);
     font-size: 10px;
     font-family: 'MT-Semibold';
-    opacity: 80%;
+    opacity: 60%;
     margin-top: -65px;
-    margin-left: 204px;
+    margin-left: 204.5px;
 }
 
 .btm {
@@ -662,7 +654,7 @@ input {
     -webkit-app-region: no-drag;
 }
 
-.reg {
+.seriesReg {
     margin-top: 20px;
 }
 
@@ -768,14 +760,10 @@ svg * {
 }
 
 #notiCbx {
-    display: absolute;
-    position: absolute;
     margin-top: 40px;
 }
 
 .notiCbxText {
-    display: absolute;
-    position: absolute;
     margin-top: 37px;
     margin-left: 25px;
     color: white;
@@ -792,10 +780,6 @@ svg * {
     float: left;
     justify-content: left;
     align-content: left;
-}
-
-.checkboxes {
-    opacity: 90%;
 }
 
 #vertical {
@@ -1081,6 +1065,75 @@ svg * {
     transform: rotate(45deg) translate(-5.45px, -4.5px);
 }
 
+/* Checkbox Styling */
+[type="checkbox"]:not(:checked),
+[type="checkbox"]:checked {
+    left: 0;
+    display: none;
+    -webkit-app-region: no-drag;
+    text-align: center;
+}
+[type="checkbox"]:not(:checked) + label,
+[type="checkbox"]:checked + label {
+    position: relative;
+    width: 10px;
+    padding-left: 2.3em;
+    line-height: 1.3em;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+    text-align: center;
+}
+
+/* checkbox aspect */
+[type="checkbox"]:not(:checked) + label:before,
+[type="checkbox"]:checked + label:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1.4em;
+    height: 1.4em;
+    border: 1px solid #aaa;
+    background: #FFF;
+    border-radius: .2em;
+    -webkit-app-region: no-drag;
+    text-align: center;
+    box-shadow: inset 0 1px 3px rgba(0,0,0, .1), 0 0 0 rgba(203, 34, 237, .2);
+    -webkit-transition: all .275s;
+            transition: all .275s;
+}
+
+/* checked mark aspect */
+[type="checkbox"]:not(:checked) + label:after,
+[type="checkbox"]:checked + label:after {
+    content: '✕';
+    position: absolute;
+    top: .525em;
+    left: .18em;
+    font-size: 1.375em;
+    color: #CB22ED;
+    line-height: 0;
+    -webkit-app-region: no-drag;
+    text-align: center;
+    -webkit-transition: all .2s;
+            transition: all .2s;
+}
+
+/* checked mark aspect changes */
+[type="checkbox"]:not(:checked) + label:after {
+    opacity: 0;
+    -webkit-app-region: no-drag;
+    -webkit-transform: scale(0) rotate(45deg);
+            transform: scale(0) rotate(45deg);
+}
+
+[type="checkbox"]:checked + label:after {
+    opacity: 1;
+    -webkit-app-region: no-drag;
+    -webkit-transform: scale(1) rotate(0);
+            transform: scale(1) rotate(0);
+}
+
 
 /* ### */
 /* Fonts */
@@ -1115,5 +1168,5 @@ svg * {
 
 
 /* ### */
-/* Playground */
+/* plgrnd */
 /* ### */
