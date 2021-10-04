@@ -545,6 +545,26 @@ html {
     height: 30px;
 }
 
+#goButtonText {
+    position: absolute;
+    color: white;
+    font-size: 10px;
+    font-family: 'MT-Semibold';
+    opacity: 10%;
+    margin-top: -70px;
+    margin-left: 32px;
+}
+
+#stopButtonText {
+    position: absolute;
+    color: white;
+    font-size: 10px;
+    font-family: 'MT-Semibold';
+    opacity: 80%;
+    margin-top: -65px;
+    margin-left: 204px;
+}
+
 .btm {
     margin-top: 500px;
 }
@@ -648,10 +668,6 @@ input {
 
 .syncContainer {
     margin-top: 20px;
-}
-
-.syncContainer > div {
-    border: solid 1px black;
 }
 
 #syncButtonGo {
