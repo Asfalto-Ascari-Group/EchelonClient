@@ -45,8 +45,9 @@ html {
     text-align: left;
     color: white;
     font-size: 70%;
-    font-weight: lighter;
-    font-family: 'AsfaltoMeticulaRegular', sans-serif;
+    font-weight: 100;
+    font-family: 'MT-Light';
+    font-style: italic;
     margin-top: 48px;
     margin-left: 60px;
     overflow-wrap: anywhere;
@@ -506,7 +507,6 @@ html {
     padding-top: 5px;
     padding-bottom: 5px;
     border-radius: 10px;
-    background-color: tomato;
     -webkit-app-region: no-drag;
 }
 
@@ -550,10 +550,10 @@ html {
 #stopButtonText {
     position: absolute;
     color: rgb(33, 33, 33);
-    font-size: 10px;
+    font-size: 9px;
     font-family: 'MT-Semibold';
-    opacity: 60%;
-    margin-top: -65px;
+    opacity: 34%;
+    margin-top: -30px;
     margin-left: 204.5px;
 }
 
@@ -592,6 +592,14 @@ html {
     float: right;
     margin-top: 5px;
     margin-right: 28px;
+}
+
+#footerVersion {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    margin-top: 4px;
 }
 
 #statusIcon {
@@ -768,6 +776,11 @@ svg * {
     margin-left: 25px;
     color: white;
     font-family: 'MT-Semibold';
+}
+
+#notiCbxContainer {
+    margin-top: 25px;
+    margin-left: -24px;
 }
 
 #noticeText {
@@ -1110,8 +1123,8 @@ svg * {
     position: absolute;
     top: .525em;
     left: .18em;
-    font-size: 1.375em;
-    color: #CB22ED;
+    font-size: 1.4em;
+    color: #001b1e;
     line-height: 0;
     -webkit-app-region: no-drag;
     text-align: center;

@@ -165,15 +165,18 @@
 
                     <div class="titleMount1">'assettocorsa' Steam Folder:</div>
                     <button class="mountButton" id="pathmountButton">Browse</button>
-                    <div class="gamePathText" id="pathmount">gamePathText</div>
+                    <div class="gamePathText" id="pathmount"></div>
                     <!-- <div id="noticeText"><b>Note: </b>This is the file path to your 'assettocorsa' steam directory, The executable location is NOT needed.</div> -->
 
                     <div class="titlemount2" id="titlemount2">'assettocorsa' Documents Folder:</div>
                     <button class="documentsMountButton" id="documentsmountButton">Browse</button>
                     <div class="documentsText" id="documentmount">DocumentsPath</div>
 
-                    <input id="notiCbx" type="checkbox" name="notification" onchange="clientNotificationChange(this)">
-                    <label for="notiCbx" class="notiCbxText">Allow Notifications</label>
+                    <div id="notiCbxContainer">
+                        <input id="notiCbx" type="checkbox" name="notification" onchange="clientNotificationChange(this)">
+                        <label for="notiCbx" class="notiCbxText">Allow Notifications</label>
+                    </div>
+
                 </div>
             </div>
 
@@ -561,7 +564,7 @@
 
     <div id="footerText">
         Server Connection <span id="statusIcon">🔴</span><br>
-        Echelon_BETA
+        <div id="footerVersion">Echelon_BETA</div>
     </div>
 
     <script src="script.js"></script>
