@@ -1,4 +1,5 @@
 const { mainWindow, ipcRenderer, remote, ipcMain } = require('electron');
+const ReactAnimatedEllipsis = require('react-animated-ellipsis');
 const appStorage = window.localStorage;
 
 // @GLOBALS
@@ -83,6 +84,7 @@ ipcRenderer.on('downloadProgress', (event, msg) => {
 
 ipcRenderer.on('downloadDone', (event, msg) => {
     document.getElementById('demoText2').innerHTML = msg;
+    confStopButton();
 });
 
 ipcRenderer.on('dlPath', (event, msg) => {
@@ -152,6 +154,20 @@ ipcRenderer.on('serverState', (event, bool) => {
     };
 });
 
+const confStopButton = () => {
+    const btnStop = document.getElementById('btnStop');
+    const btnStopTop = document.getElementById('btnStopTop');
+    const btnStopText = document.getElementById('stopButtonText');
+
+    // Turn the button off
+    btnStop.style.pointerEvents = 'none';
+    btnStopTop.style.pointerEvents = 'none';
+    btnStopText.style.pointerEvents = 'none';
+    btnStop.style.opacity = 0.3;
+    btnStopTop.style.opacity = 0.3;
+    btnStopText.style.opacity = 0.3;
+};
+
 window.addEventListener('DOMContentLoaded', () => {
 
     // Send load event to ipcMain
@@ -180,6 +196,9 @@ window.addEventListener('DOMContentLoaded', () => {
     check('cb2', 'gtSpec');
     check('cb3', 'cSpec');
     check('notiCbx', 'notifications');
+
+    // Configure stop button
+    confStopButton();
 
     // Are you developing ? = true/false
     // -- true = shows content that is NOT in the stable release
@@ -306,12 +325,12 @@ function pushNotification(title, content, type, ms) {
         type: type,
         ms: ms
     });
-    // log(notisQueue);
 
     // Check if container is in use
     if (isQueueOpen) {
         createNotification(title, content, type, ms);
     };
+
 };
 
 // Create notification
@@ -350,10 +369,9 @@ function createNotification(title, content, type, ms) {
             notification.style.display = 'none';
     
             notisQueue.shift();
-            log(notisQueue);
+            // log(notisQueue);
     
             isQueueOpen = true;
-            // log(isQueueOpen);
             
             if (notisQueue[0]) {
                 let tname = notisQueue[0];
@@ -395,24 +413,27 @@ function settingsSyncFlip() {
     topelem.style.opacity = 1;
 };
 
-function elipAnim() {
+async function elipAnim() {
 
-    document.getElementById('demoText2').innerHTML = 'Starting download..'
+    var foo = [' ', '.', '..', '...'];
+    var ele = document.getElementById('demoText3');
+    var eleC = document.getElementById('demoText3Container');
+    var x = 0;
 
+    ele.innerHTML = '';
+    eleC.style.display = 'inline-block';
+
+    ele.innerHTML = 'Downloading Files' + foo[x++];
     setInterval(() => {
-        setTimeout(() => {
-            document.getElementById('demoText2').innerHTML = 'Starting download.'
-        }, 500);
-        setTimeout(() => {
-            document.getElementById('demoText2').innerHTML = 'Starting download..'
-        }, 500);
-        setTimeout(() => {
-            document.getElementById('demoText2').innerHTML = 'Starting download...'
-        }, 500);
-        
+        ele.innerHTML = 'Downloading Files' + foo[x++];
+        x &= 3;
     }, 650);
 
 };
+
+ipcRenderer.on('removeStartPos', (event) => {
+    document.getElementById('demoText3Container').style.display = 'none';
+});
 
 ipcRenderer.on('btnReact', (event, type) => {
 
@@ -432,11 +453,13 @@ ipcRenderer.on('btnReact', (event, type) => {
         // Return stop button back to normal
         document.getElementById('btnStop').style.opacity = 1;
         document.getElementById('btnStopTop').style.opacity = 1;
-        document.getElementById('btnStopText').style.opacity = 1;
+        document.getElementById('stopButtonText').style.opacity = 1;
 
         // Change innerHTML of progress text
-        document.getElementById('demoText2').innerHTML = 'Starting download..'
-        document.getElementById('demoText').innerHTML = '0%'
+        // document.getElementById('demoText2').innerHTML = 'Starting download..';
+        document.getElementById('demoText').innerHTML = '0%';
+        elipAnim();
+
     }
     else if (type == 'finish') {
         const btnGo = document.getElementById('btnGo');
@@ -453,6 +476,8 @@ ipcRenderer.on('btnReact', (event, type) => {
 
         // Revert boolean so button can be used again
         canButtonBeUsed = true;
+
+        document.getElementById('demoText3').style.display = 'none';
     };
 });
 
@@ -466,7 +491,10 @@ const btnGo = () => {
 ipcRenderer.on('buttonStart', () => {
 
     document.getElementById('demoText').style.opacity = 1;
-    document.getElementById('demoText2').style.opacity = 1;
+
+    var element = document.getElementById('demoText2');
+    element.style.opacity = 1;
+    element.innerHTML = '<ReactAnimatedEllipsis/>';
 
     // Disable use of button
     canButtonBeUsed = false;
@@ -500,22 +528,17 @@ const btnStop = () => {
 
 ipcRenderer.on('buttonStop', () => {
 
-    document.getElementById('btnStop').style.opacity = 0.3;
-    document.getElementById('btnStopTop').style.opacity = 0.3;
-    document.getElementById('btnStopText').style.opacity = 0.3;
+    confStopButton();
     document.getElementById('demoText').style.opacity = 0;
     document.getElementById('demoText2').style.opacity = 0;
+    document.getElementById('demoText3').style.display = 'none';
 
     setTimeout(() => {
-        document.getElementById('btnStop').style.opacity = 1;
-        document.getElementById('btnStopTop').style.opacity = 1;
-        document.getElementById('btnStopText').style.opacity = 1;
-
         const btnGo = document.getElementById('btnGo');
         const btnGoTop = document.getElementById('btnGoTop');
-        const btnGoText = document.getElementById('btnGoText');
+        const btnGoText = document.getElementById('goButtonText');
     
-        // Turn the button off
+        // Turn the go button on
         btnGo.style.pointerEvents = 'auto';
         btnGoTop.style.pointerEvents = 'auto';
         btnGoText.style.pointerEvents = 'auto';

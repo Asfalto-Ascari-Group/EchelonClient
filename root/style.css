@@ -553,8 +553,8 @@ html {
     font-size: 9px;
     font-family: 'MT-Semibold';
     opacity: 34%;
-    margin-top: -30px;
-    margin-left: 204.5px;
+    margin-top: -16px;
+    margin-left: 203px;
 }
 
 .btm {
@@ -575,6 +575,15 @@ html {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+
+.checkboxText {
+    color: white;
+    position: relative;
+    font-family: 'MT-SemiBold';
+    text-align: center;
+    vertical-align: center;
+    top: 3.5px;
 }
 
 .usernameText {
@@ -759,6 +768,27 @@ svg * {
     margin-top: -30px;
     width: 100px;
     height: 40px;
+}
+
+#demoText3 {
+    text-align: left;
+    align-items: left;
+    justify-content: left;
+    float: left;
+    margin-left: 3px;
+    font-family: 'MT-Light';
+    color: white;
+    font-size: 10px;
+    word-break: break-all;
+}
+
+#demoText3Container {
+    margin-left: 143px;
+    margin-top: -220px;
+    width: 100px;
+    height: 40px;
+    display: none;
+    position: absolute;
 }
 
 #currentPath {
@@ -1106,8 +1136,8 @@ svg * {
     top: 0;
     width: 1.4em;
     height: 1.4em;
-    border: 1px solid #aaa;
-    background: #FFF;
+    border: 1px solid rgb(0, 0, 0);
+    background: rgb(37, 37, 38);
     border-radius: .2em;
     -webkit-app-region: no-drag;
     text-align: center;
@@ -1121,10 +1151,10 @@ svg * {
 [type="checkbox"]:checked + label:after {
     content: '✕';
     position: absolute;
-    top: .525em;
-    left: .18em;
+    top: .580em;
+    left: .15em;
     font-size: 1.4em;
-    color: #001b1e;
+    color: #d1d1d1;
     line-height: 0;
     -webkit-app-region: no-drag;
     text-align: center;

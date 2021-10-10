@@ -1,24 +1,13 @@
-const {
-    BrowserWindow,
-    app,
-    ipcMain,
-    autoUpdater,
-    dialog,
-    Notification
-} = require('electron');
-const {
-    io
-} = require('socket.io-client');
+const { BrowserWindow, app, ipcMain, autoUpdater, dialog, Notification } = require('electron');
+const { io } = require('socket.io-client');
 const fs = require('fs');
-const {
-    getGamePath
-} = require('steam-game-path');
+const { getGamePath } = require('steam-game-path');
 const unzipper = require('unzipper');
 const http = require('http');
 const pth = require('path');
-const {
-    time
-} = require('console');
+const { time } = require('console');
+const path = require('path');
+const async = require('async');
 
 require('dotenv').config();
 
@@ -77,6 +66,12 @@ var chosenModules = [];
 var isDownloadStopped = new Boolean();
 isDownloadStopped = false;
 var moduleCount = 0;
+var filesToDownload = [];
+var isDownloadQueueOpen = true;
+var globalFilesCount = 0;
+var percentTerm = 0;
+var counter = 0;
+var totalPercent = 0;
 
 // Configure window options
 var win;
@@ -336,7 +331,7 @@ ipcMain.on('syncButton', (event, foo) => {
             defaultId: 2,
             title: 'Stop Download?',
             message: 'Do you want to stop the download?',
-            detail: 'As of Echelon_BETA, Stopping a download can cause un-wanted side effects.'
+            detail: 'As of Echelon_BETA, Stopping a download may not work properly.'
         };
 
         dialog.showMessageBox(options)
@@ -349,174 +344,101 @@ ipcMain.on('syncButton', (event, foo) => {
     };
 });
 
+const preDownloadConf = () => {
 
-// Catch response json files from server
-socket.on('currentServerResponse', async (arr) => {
+    // Check if download is stopped
+    if (!isDownloadStopped) {
 
-    // Conf
-    var json = [];
-    for (item of arr.response) {
-        json.push(item);
+        // Send complete state for client UI
+        win.webContents.send('btnReact', 'finish');
+        win.webContents.send('downloadDone', 'Finished!');
+
+        // Check for notification boolean
+        if (notisChoice == 'true') {
+            const notification = new Notification({
+                title: `Echelon has Finished Syncing`,
+                body: 'Your Assetto Corsa content is synchronised'
+            }).show();
+        };
     };
-    var counter = 0;
-    var itemCount = json.length;
-    var percentTerm = 100 / (itemCount * 2);
-    var totalPercent = 0;
+};
+
+const pushFileToQueue = (file) => {
+
+    // Push file to queue
+    filesToDownload.push(file);
+
+    // Check if queue is in use
+    if (isDownloadQueueOpen) {
+        downloadFile(file);
+    };
+
+};
+
+const downloadFile = (file) => {
+
+    // Block download queue
+    isDownloadQueueOpen = false;
+    log(file)
+
+    // Download file
+    var req = http.get(file.urlpath, async (res) => {
+
+        res.pipe(
+            unzipper.Extract({
+                path: `${gameInstallDir}/content/${file.type}`
+            })
+        );
+
+        // Unzip finish (unknown)
+        res.on('end', () => {
+            log('end');
+            counter++;
+            totalPercent += percentTerm;
+            win.webContents.send('downloadProgress', Math.trunc(totalPercent));
+            filesToDownload.shift();
+            isDownloadQueueOpen = true;
+            if (counter != globalFilesCount) {
+                downloadFile(filesToDownload[0]);
+            }
+            else (
+                win.webContents.send('')
+            )
+        });
+
+    });
+    
+    // Initial file download
+    req.on('response', () => {
+        log('response');
+        win.webContents.send('currentInstallPath', `${gameInstallDir}/${file.filename}`);
+    });
+
+    // Destroy request when file is completley done
+    req.on('close', () => {
+        req.end();
+        req.destroy();
+    });
+
+};
+
+// Start download socket response from server
+socket.on('currentServerResponse', (arr) => {
 
     // Download each file and unzip individually (waiting for each file to be completed before moving on)
-    for await (let item of json) {
-
-        let itemString = item.urlpath.split('/');
-        var id = itemString[5];
-
-        // finish, end, close
-        var req = http.get(item.urlpath, async (res) => {
-
-            res.pipe(
-                unzipper.Extract({
-                    path: `${gameInstallDir}/content/${item.type}`
-                })
-            );
-
-            res.on('close', () => {
-                let path = `${gameInstallDir}/${item.filename}`;
-                win.webContents.send('currentInstallPath', path);
-
-                counter++;
-                totalPercent = totalPercent + percentTerm;
-                win.webContents.send('downloadProgress', Math.trunc(totalPercent));
-                log(totalPercent)
-
-
-                if (counter == itemCount) {
-
-                    if (!isDownloadStopped) {
-
-                        // Send complete state for client UI
-                        win.webContents.send('btnReact', 'finish');
-                        win.webContents.send('downloadDone', 'Finished!');
-
-                        // Check for notification boolean
-                        if (notisChoice == 'true') {
-                            const notification = new Notification({
-                                title: `Echelon has Finished Syncing`,
-                                body: 'Your Assetto Corsa content is synchronised'
-                            }).show();
-                        };
-                    };
-                };
-            });
-
-        });
-
-        req.on('close', () => {
-            win.webContents.send('dlPath', item.filename);
-            
-            totalPercent = totalPercent + percentTerm;
-            win.webContents.send('downloadProgress', Math.trunc(totalPercent));
-            log(totalPercent)
-        });
+    // Parrallel downloads could be used but one by one is just way easier to mitigate issues etc.
+    for (let i=0; i<arr.response.length; i++) {
+        pushFileToQueue(arr.response[i]);
+        globalFilesCount++;
+        percentTerm = 100 / globalFilesCount;
+    };
+    
+    // Do confs after download has done
+    if (counter == filesToDownload.length) {
+        // Basically send notification and client ui events
+        preDownloadConf();
     };
 
-    // DL
-    // for await (let item of json) {
-
-    //     let itemString = item.urlpath.split('/');
-    //     var id = itemString[5];
-
-    //     // Start file download
-    //     var req = http.get(item.urlpath, async (res) => {
-
-    //         // Emit server event
-    //         socket.emit("cout", `Download Started: "${item.filename}" `);
-
-    //         // Direct download stream to unzipper module
-    //         res.pipe(
-    //             unzipper.Extract({
-    //                 path: `${gameInstallDir}/content/${item.type}/`
-    //             })
-    //         );
-
-    //         res.on('close', () => {
-
-    //             // Send current download path to renderer
-    //             let path = `${gameInstallDir}/${item.filename}`;
-    //             win.webContents.send('currentInstallPath', path);
-
-    //             // Check if entry exists on the client hash map already
-    //             // var clientHashMapPath = fs.readFileSync('./content/temp/client.json');
-    //             var clientHashMap = JSON.parse(fs.readFileSync(pth.join(__dirname, '\\content\\temp\\client.json')));
-    //             let dupe = clientHashMap.find(entry => entry.path.replace(/\\/g, "/") == `${gameInstallDir}\\content\\${item.type}\\${item.filename}`.replace(/\\/g, "/"));
-
-    //             // If the entry does not exist, then add the entry to the hash map
-    //             if (!dupe) {
-
-    //                 let hashMapFinal = JSON.parse(fs.readFileSync(pth.join(__dirname, 'content\\temp\\client.json')));
-    //                 hashMapFinal.push({
-    //                     namespace: id,
-    //                     type: item.type,
-    //                     filename: item.filename,
-    //                     ext: item.ext,
-    //                     basename: item.basename,
-    //                     urlpath: item.urlpath,
-    //                     path: `${gameInstallDir}\\content\\${item.type}\\${item.filename}`
-    //                 });
-
-    //                 fs.writeFileSync(pth.join(__dirname, '.\\content\\temp\\client.json'), JSON.stringify(hashMapFinal, null, 4));
-    //             };
-
-    //             if (!isDownloadStopped) {
-    //                 // Increment loop/progress counter
-    //                 counter++;
-    //                 totalPercent = totalPercent + percentTerm;
-    //                 win.webContents.send('downloadProgress', Math.trunc(totalPercent));
-    //             };
-
-    //             // If all items on respective module have finished downloading
-    //             if (json.length == counter) {
-
-    //                 if (!isDownloadStopped) {
-    //                     // Send complete state for client UI
-    //                     win.webContents.send('btnReact', 'finish');
-    //                     win.webContents.send('downloadDone', 'Finished!');
-
-    //                     // Check for notification boolean
-    //                     if (notisChoice == 'true') {
-    //                         const notification = new Notification({
-    //                             title: `Echelon has Finished Syncing`,
-    //                             body: 'Your Assetto Corsa content is synchronised'
-    //                         }).show();
-    //                     };
-    //                 };
-
-    //                 // Get and set the new client version
-    //                 // var clientVersion = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/clientVersion.json')).toString());
-
-    //                 // // let serverVersion = arr.version[id].version;
-    //                 // // clientVersion[id].version = serverVersion;
-    //                 // fs.writeFileSync(pth.join(__dirname, './content/temp/clientVersion.json'), JSON.stringify(clientVersion, null, 4));
-
-    //                 // // HASHMAP PORTION (where appplicable)
-    //                 // // Determine what modules have been unticked and delete all items that are under the respective module
-    //                 // var clientHashMap = JSON.parse(fs.readFileSync(pth.join(__dirname, './content/temp/client.json')));
-    //                 // for (item of clientHashMap) {
-    //                 //     // if the item has a namespace that is inside of the chosenModules array
-    //                 //     // -- delete files BEFORE then text on screen then the hash map
-
-    //                 //     if (item.namespace == 'flSpec') {
-    //                 //         // log(item.filename)
-    //                 //     };
-    //                 // };
-
-    //             };
-    //         });
-    //     });
-
-    //     req.on('close', () => {
-    //         log('req, close');
-    //     });
-            
-    // };
 });
 
 // Check version against server module versions

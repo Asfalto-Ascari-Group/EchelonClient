@@ -106,11 +106,9 @@
                                     .gobuttonoverlaycls-3 {
                                         fill: #fff;
                                     }
-
                                     .gobuttonoverlaycls-2 {
                                         opacity: 0.8;
                                     }
-
                                     .gobuttonoverlaycls-3 {
                                         opacity: 0.5;
                                     }
@@ -155,6 +153,10 @@
                     <div id="demoText2Container">
                         <div id="demoText2"></div>
                     </div>
+
+                    <div id="demoText3Container">
+                        <div id="demoText3"></div>
+                    </div>
                     
                 </div>
 
@@ -174,7 +176,8 @@
 
                     <div id="notiCbxContainer">
                         <input id="notiCbx" type="checkbox" name="notification" onchange="clientNotificationChange(this)">
-                        <label for="notiCbx" class="notiCbxText">Allow Notifications</label>
+                        <label for="notiCbx" class="notiCbxText"></label>
+                        <span class="checkboxText">Allow Notifications</span>
                     </div>
 
                 </div>
@@ -474,13 +477,16 @@
 
                     <form class="seriesReg" id="checkboxes">
                         <input type="checkbox" class="checkboxes" id="cb1" name="flSpec" onchange="valueParse(this)">
-                        <label for="cb1" class="globalFont">Formula</label>
+                        <label for="cb1"></label>
+                        <span class="checkboxText">Formula</span>
 
                         <input type="checkbox" class="checkboxes" id="cb2" name="gtSpec" onchange="valueParse(this)">
-                        <label style="margin-left: 30px;" for="cb2" class="globalFont">GT</label>
+                        <label style="margin-left: 30px;" for="cb2"></label>
+                        <span class="checkboxText">GT</span>
 
                         <input type="checkbox" class="checkboxes" id="cb3" name="cSpec" onchange="valueParse(this)">
-                        <label style="margin-left: 30px;" for="cb3" class="globalFont">Indy</label>
+                        <label style="margin-left: 30px;" for="cb3"></label>
+                        <span class="checkboxText">Indy</span>
                     </form>
 
                     <div class="seriesVersionsContainer" id="seriesVersionsContainer">

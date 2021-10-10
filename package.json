@@ -8,6 +8,7 @@
   "author": "AsfaltoAscari",
   "license": "ISC",
   "dependencies": {
+    "async": "^0.2.10",
     "decompress": "^4.2.1",
     "dns": "^0.2.2",
     "dotenv": "^10.0.0",
@@ -20,6 +21,7 @@
     "os": "^0.1.2",
     "performance": "^1.4.0",
     "public-ip": "^4.0.4",
+    "react-animated-ellipsis": "^1.0.0",
     "shell": "^0.5.0",
     "socket.io-client": "^4.1.2",
     "steam-game-path": "^2.0.1",
