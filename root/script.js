@@ -15,6 +15,7 @@ var infoCounter = 0;
 var releaseName;
 var canButtonBeUsed = true;
 var serverState = false;
+var downloadState = 'dl';
 
 // Config appStorage entries
 const check = (id, n) => {
@@ -85,6 +86,7 @@ ipcRenderer.on('downloadProgress', (event, msg) => {
 ipcRenderer.on('downloadDone', (event, msg) => {
     document.getElementById('demoText2').innerHTML = msg;
     confStopButton();
+    document.getElementById('demoText3Container').style.display = 'none';
 });
 
 ipcRenderer.on('dlPath', (event, msg) => {
@@ -425,11 +427,20 @@ async function elipAnim() {
 
     ele.innerHTML = 'Downloading Files' + foo[x++];
     setInterval(() => {
-        ele.innerHTML = 'Downloading Files' + foo[x++];
-        x &= 3;
+        if (downloadState == 'dl') {
+            ele.innerHTML = `Downloading Files${foo[x++]}`;
+            x &= 3;
+        };
+        if (downloadState == 'unzip') {
+            ele.innerHTML = `Unzipping Files${foo[x++]}`;
+            x &= 3;
+        }
     }, 650);
-
 };
+
+ipcRenderer.on('elipAnimCallUnzip', (event) => {
+    downloadState = 'unzip';
+});
 
 ipcRenderer.on('removeStartPos', (event) => {
     document.getElementById('demoText3Container').style.display = 'none';
@@ -459,6 +470,8 @@ ipcRenderer.on('btnReact', (event, type) => {
         // document.getElementById('demoText2').innerHTML = 'Starting download..';
         document.getElementById('demoText').innerHTML = '0%';
         elipAnim();
+
+        // use while loop and setTimeout instead
 
     }
     else if (type == 'finish') {

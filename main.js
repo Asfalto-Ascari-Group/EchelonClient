@@ -382,7 +382,7 @@ const downloadFile = (file) => {
     log(file)
 
     // Download file
-    var req = http.get(file.urlpath, async (res) => {
+    var req = http.get(file.urlpath, (res) => {
 
         res.pipe(
             unzipper.Extract({
@@ -400,10 +400,7 @@ const downloadFile = (file) => {
             isDownloadQueueOpen = true;
             if (counter != globalFilesCount) {
                 downloadFile(filesToDownload[0]);
-            }
-            else (
-                win.webContents.send('')
-            )
+            };
         });
 
     });
@@ -411,7 +408,9 @@ const downloadFile = (file) => {
     // Initial file download
     req.on('response', () => {
         log('response');
-        win.webContents.send('currentInstallPath', `${gameInstallDir}/${file.filename}`);
+        if (counter != filesToDownload.length) {
+            win.webContents.send('currentInstallPath', `${gameInstallDir}/${file.filename}`);
+        };
     });
 
     // Destroy request when file is completley done
@@ -425,8 +424,7 @@ const downloadFile = (file) => {
 // Start download socket response from server
 socket.on('currentServerResponse', (arr) => {
 
-    // Download each file and unzip individually (waiting for each file to be completed before moving on)
-    // Parrallel downloads could be used but one by one is just way easier to mitigate issues etc.
+    // Download each file seperatley
     for (let i=0; i<arr.response.length; i++) {
         pushFileToQueue(arr.response[i]);
         globalFilesCount++;
@@ -435,8 +433,8 @@ socket.on('currentServerResponse', (arr) => {
     
     // Do confs after download has done
     if (counter == filesToDownload.length) {
-        // Basically send notification and client ui events
         preDownloadConf();
+        win.webContents.send('downloadDone', 'Finished!');
     };
 
 });
