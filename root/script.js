@@ -23,6 +23,10 @@ const check = (id, n) => {
     document.getElementById(id).checked = bool;
 };
 
+ipcRenderer.on('cout', (event, msg) => {
+    log(msg);
+});
+
 // DEPRECATED
 // ipcRenderer.on('getLocalStorage', (event) => {
 //     // Send local storage user choice data to main.js

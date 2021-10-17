@@ -88,8 +88,9 @@ html {
     text-align: left;
     color: white;
     font-size: 70%;
-    font-weight: lighter;
-    font-family: 'AsfaltoMeticulaRegular', sans-serif;
+    font-weight: 100;
+    font-family: 'MT-Light';
+    font-style: italic;
     margin-top: -22px;
     margin-left: 60px;
     overflow-wrap: anywhere;

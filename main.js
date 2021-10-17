@@ -117,11 +117,12 @@ app.on('window-all-closed', () => {
 
 const findDocumentsFallback = () => {
     try {
+        win.webContents.send('cout', 'documents callback');
         var baseuid = os.homedir();
-        log(baseuid);
+        // log(baseuid);
 
         if (fs.readdirSync(`${baseuid}/Documents/Assetto Cora`)) {
-            log('Documents found');
+            // log('Documents found');
             documentsDirUser = `${baseuid}/Documents/assettocorsa`;
             documentsDir = documentsDirUser;
             win.webContents.send('documentPathStatus', {msg: documentsDir});
@@ -129,7 +130,7 @@ const findDocumentsFallback = () => {
         win.webContents.send('notification', {title: 'Temporary Documents Path Found...', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 7000});
     }
     catch (err) {
-        log('Documents not found');
+        // log('Documents not found');
         win.webContents.send('notification', {title: 'Documents Could Not Be Found...', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
     };
 };
@@ -163,7 +164,7 @@ ipcMain.on('windowLoad', (event, arr) => {
 
         // Configure documents path
         var baseuid = os.homedir().split('\\')[2];
-        log(baseuid)
+        // log(baseuid)
 
         try {
             if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/`)) {
@@ -283,7 +284,7 @@ ipcMain.on('documentsPathMount', () => {
         properties: ['openDirectory']
     });
 
-    log(documentsDirUser);
+    // log(documentsDirUser);
 
     // Check chosen path
     if (documentsDirUser == undefined || documentsDirUser == 'undefined' || documentsDirUser == '') {
