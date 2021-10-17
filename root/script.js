@@ -221,9 +221,9 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('demoText2').style.display = 'inline-block';
         document.getElementById('demoText2').style.marginTop = '45px';
 
-        document.getElementById('titlemount2').style.display = 'none';
-        document.getElementById('documentsmountButton').style.display = 'none';
-        document.getElementById('documentmount').style.display = 'none';
+        // document.getElementById('titlemount2').style.display = 'none';
+        // document.getElementById('documentsmountButton').style.display = 'none';
+        // document.getElementById('documentmount').style.display = 'none';
 
         document.getElementById('eventdot1').style.display = 'none';
         document.getElementById('eventdot1full').style.display = 'none';

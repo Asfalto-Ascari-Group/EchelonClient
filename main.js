@@ -8,6 +8,8 @@ const pth = require('path');
 const { time } = require('console');
 const path = require('path');
 const async = require('async');
+const os = require('os');
+// import {getDownloadsFolder} from 'platform-folders';
 
 require('dotenv').config();
 
@@ -113,6 +115,25 @@ app.on('window-all-closed', () => {
     };
 });
 
+const findDocumentsFallback = () => {
+    try {
+        var baseuid = os.homedir();
+        log(baseuid);
+
+        if (fs.readdirSync(`${baseuid}/Documents/Assetto Cora`)) {
+            log('Documents found');
+            documentsDirUser = `${baseuid}/Documents/assettocorsa`;
+            documentsDir = documentsDirUser;
+            win.webContents.send('documentPathStatus', {msg: documentsDir});
+        }
+        win.webContents.send('notification', {title: 'Temporary Documents Path Found...', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 7000});
+    }
+    catch (err) {
+        log('Documents not found');
+        win.webContents.send('notification', {title: 'Documents Could Not Be Found...', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
+    };
+};
+
 // On window load
 ipcMain.on('windowLoad', (event, arr) => {
 
@@ -140,23 +161,28 @@ ipcMain.on('windowLoad', (event, arr) => {
         });
         isPathFound = true;
 
-        // // Configure documents path
-        // var baseuid = os.homedir().split('\\')[2];
-        // if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/`)) {
-        //     if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`)) {
+        // Configure documents path
+        var baseuid = os.homedir().split('\\')[2];
+        log(baseuid)
 
-        //         // 'assettocorsa' exists in documents folder
-        //         documentsDirUser = `${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`;
-        //         documentsDir = documentsDirUser;
-        //         win.webContents.send('documentPathStatus', {msg: documentsDir});
-        //     };
-        // }
-        // else if (!fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/`)) {
-        //     win.webContents.send('notification', {title: 'Cannot Find Documents Path', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
-        // }
-        // else if (!fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`)) {
-        //     win.webContents.send('notification', {title: 'Cannot Find Documents Path', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
-        // };
+        try {
+            if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/`)) {
+                if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`)) {
+    
+                    // 'assettocorsa' exists in documents folder
+                    documentsDirUser = `${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`;
+                    documentsDir = documentsDirUser;
+                    win.webContents.send('documentPathStatus', {msg: documentsDir});
+                };
+            }
+            else {
+                findDocumentsFallback();
+            };
+        }
+        catch (err) {
+            win.webContents.send('notification', {title: 'Documents Could Not Be Found...', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
+        };
+
 
     };
 
@@ -249,33 +275,35 @@ ipcMain.on('gamePathMount', () => {
 });
 
 // User chooses their documents game path
-// ipcMain.on('documentsPathMount', () => {
+ipcMain.on('documentsPathMount', () => {
 
-//     // Open dialog box
-//     documentsDirUser = dialog.showOpenDialogSync(win, {
-//         title: 'Choose "assettocorsa" file path',
-//         properties: ['openDirectory']
-//     });
+    // Open dialog box
+    documentsDirUser = dialog.showOpenDialogSync(win, {
+        title: 'Choose "assettocorsa" file path',
+        properties: ['openDirectory']
+    });
 
-//     // Check chosen path
-//     if (documentsDirUser == undefined || documentsDirUser == 'undefined' || documentsDirUser == '') {
-//         // null, error, dialog closed out
-//         win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
-//     }
-//     else if (documentsDirUser[0].includes('Documents') == false) {
-//         // Path does not contain the 'Documents' query
-//         win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
-//     }
-//     else if (documentsDirUser[0].includes('assettocorsa') == false) {
-//         // Path does not contain the 'assettocorsa' query
-//         win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
-//     }
-//     else if (documentsDirUser[0].includes('Documents') && documentsDirUser[0].includes('assettocorsa')) {
-//         // Correct path has been chosen
-//         win.webContents.send('documentPathStatus', {msg: documentsDirUser});
-//         documentsDir = documentsDirUser;
-//     };
-// });
+    log(documentsDirUser);
+
+    // Check chosen path
+    if (documentsDirUser == undefined || documentsDirUser == 'undefined' || documentsDirUser == '') {
+        // null, error, dialog closed out
+        win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
+    }
+    else if (documentsDirUser[0].includes('Documents') == false) {
+        // Path does not contain the 'Documents' query
+        win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
+    }
+    else if (documentsDirUser[0].includes('assettocorsa') == false) {
+        // Path does not contain the 'assettocorsa' query
+        win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
+    }
+    else if (documentsDirUser[0].includes('Documents') && documentsDirUser[0].includes('assettocorsa')) {
+        // Correct path has been chosen
+        win.webContents.send('documentPathStatus', {msg: documentsDirUser});
+        documentsDir = documentsDirUser;
+    };
+});
 
 // Fired when the notification bool value has been changed on the renderer
 ipcMain.on('notisChange', async (event, bool) => {
@@ -410,6 +438,9 @@ const downloadFile = (file) => {
         log('response');
         if (counter != filesToDownload.length) {
             win.webContents.send('currentInstallPath', `${gameInstallDir}/${file.filename}`);
+        }
+        else if (counter == filesToDownload.length) {
+            win.webContents.send('downloadDone', 'Finished!');
         };
     });
 
@@ -430,11 +461,10 @@ socket.on('currentServerResponse', (arr) => {
         globalFilesCount++;
         percentTerm = 100 / globalFilesCount;
     };
-    
+
     // Do confs after download has done
     if (counter == filesToDownload.length) {
-        preDownloadConf();
-        win.webContents.send('downloadDone', 'Finished!');
+        log('done')
     };
 
 });
