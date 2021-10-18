@@ -55,7 +55,7 @@ const socket = io(`http://35.223.123.5:4644`, {
 
 // Global variables
 var log = console.log.bind(console);
-var isPathFound = false;
+var isGamePathFound = false;
 var gameInstallDir;
 var documentsDir;
 var isWindowOn = false;
@@ -66,7 +66,7 @@ var isServerConnected = false;
 var completedModulesArr = [];
 var chosenModules = [];
 var isDownloadStopped = new Boolean();
-isDownloadStopped = false;
+isDownloadStopped = false;          
 var moduleCount = 0;
 var filesToDownload = [];
 var isDownloadQueueOpen = true;
@@ -115,77 +115,76 @@ app.on('window-all-closed', () => {
     };
 });
 
-const findDocumentsFallback = () => {
-    try {
-        win.webContents.send('cout', 'documents callback');
-        var baseuid = os.homedir();
-        // log(baseuid);
+// DEPRECATED
+// const findDocumentsFallback = (baseuid) => {
+//     try {
+//         win.webContents.send('cout', 'documents error callback - @findDocumentsFallback {func}');
 
-        if (fs.readdirSync(`${baseuid}/Documents/Assetto Cora`)) {
-            // log('Documents found');
-            documentsDirUser = `${baseuid}/Documents/assettocorsa`;
-            documentsDir = documentsDirUser;
-            win.webContents.send('documentPathStatus', {msg: documentsDir});
-        }
-        win.webContents.send('notification', {title: 'Temporary Documents Path Found...', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 7000});
-    }
-    catch (err) {
-        // log('Documents not found');
-        win.webContents.send('notification', {title: 'Documents Could Not Be Found...', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
-    };
-};
+//         if (fs.readdirSync(`${baseuid}\\Documents\\assettocorsa`)) {
+
+//             documentsDirUser = `${baseuid}\\Documents\\assettocorsa`;
+//             documentsDir = documentsDirUser;
+//             win.webContents.send('documentPathStatus', {msg: documentsDir});
+//         }
+//         win.webContents.send('notification', {title: 'Temporary Documents Path Found...', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 7000});
+//     }
+//     catch (err) {
+
+//         win.webContents.send('notification', {title: 'Documents Could Not Be Found...', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
+//         return err;
+//     };
+// };
+
+// const findDocuments = async (baseuid, dataGamePath) => {
+//     try {
+//         win.webContents.send('cout', 'documents main function - @findDocuments {func}');
+
+//         if (fs.readdirSync(`${dataGamePath}:\\Users\\${baseuid}\\`)) {
+//             if (fs.readdirSync(`${dataGamePath}:\\Users\\${baseuid}\\Documents\\assettocorsa`)) {
+
+//                 // 'assettocorsa' exists in documents folder
+//                 documentsDirUser = `${dataGamePath}:\\Users\\${baseuid}\\Documents\\assettocorsa`;
+//                 documentsDir = documentsDirUser;
+//                 win.webContents.send('documentPathStatus', {msg: documentsDir});
+//             };
+//         }
+//         else {
+//             findDocumentsFallback(baseuid);
+//         };
+//     }
+//     catch (err) {
+//         win.webContents.send('notification', {title: 'Documents Could Not Be Found...', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
+//     };
+// };
 
 // On window load
 ipcMain.on('windowLoad', (event, arr) => {
 
-    // Get game path
-    var data = getGamePath(244210);
+    // Variables conf
     isWindowOn = true;
-
-    // Client (windows) notification choice
     notisChoice = arr.notis;
 
-    // If game path is NOT found
-    if (!data.game) {
-        win.webContents.send('gamePathStatus', {
-            code: 404,
-            msg: 'Game installation path not found'
-        });
-        isPathFound = false;
-    }
+    // Find game install dir
+    var data = getGamePath(244210);
 
-    // If game path is found
-    else if (data.game.path) {
-        gameInstallDir = data.game.path;
-        win.webContents.send('gamePathStatus', {
-            msg: gameInstallDir
-        });
-        isPathFound = true;
-
-        // Configure documents path
-        var baseuid = os.homedir().split('\\')[2];
-        // log(baseuid)
-
-        try {
-            if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/`)) {
-                if (fs.readdirSync(`${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`)) {
-    
-                    // 'assettocorsa' exists in documents folder
-                    documentsDirUser = `${data.game.path[0]}:/Users/${baseuid}/Documents/assettocorsa`;
-                    documentsDir = documentsDirUser;
-                    win.webContents.send('documentPathStatus', {msg: documentsDir});
-                };
-            }
-            else {
-                findDocumentsFallback();
-            };
-        }
-        catch (err) {
-            win.webContents.send('notification', {title: 'Documents Could Not Be Found...', content: 'Please choose a documents path for "assettocorsa"', type: 'bad', ms: 10000});
+    try {
+        if (data.game.path) {
+            gameInstallDir = data.game.path;
         };
-
-
+        isGamePathFound = true;
+        win.webContents.send('gamePathStatus', {msg: gameInstallDir});
+    }
+    catch (err) {
+        isGamePathFound = false;
+        win.webContents.send('gamePathStatus', {msg: 'Game installation path not found'});
+        win.webContents.send('notification', {title: 'Assetto Corsa Could Not Be Found...', content: `Please choose a Steam installation path for 'assettocorsa'`, type: 'bad', ms: 10000});
     };
+
+    // DEPRECATED
+    // if (isGamePathFound) {
+    //     var baseuid = os.homedir().split('\\')[2];
+    //     findDocuments(baseuid, data.game.path[0]);
+    // };
 
     // If server is connected
     // if (isServerConnected) {
@@ -212,67 +211,86 @@ ipcMain.on('windowLoad', (event, arr) => {
 
 });
 
+// Remove paths past 'assettocorsa'
+function splitWithIndex(p, c) {
+    let foo = p.split('\\');
+    let newPath = ``;
+    let bool = false;
+
+    for (item of foo) {
+        if (!bool) {
+            if (item != c) {
+                if (item == foo[0]) {
+                    newPath = `${item}`;
+                }
+                else {
+                    newPath = `${newPath}\\${item}`;
+                };
+            }
+            else if (item == c) {
+                bool = true;
+                newPath = `${newPath}\\${item}`;
+            };
+        };
+    };
+    return newPath;
+};
+
+const newGamePath = (path) => {
+
+    try {
+        if (path == undefined) {
+            // Empty
+            win.webContents.send('notification', {title: 'Empty Installation Path', content: `Please enter a Steam installation path`, type: 'bad', ms: 10000});
+        }
+        else if (!path[0].includes('assettocorsa')) {
+            // Incorrect
+            win.webContents.send('notification', {title: 'Invalid Installation Path', content: `Please enter a Steam path that contains the 'assettocorsa' directory`, type: 'bad', ms: 10000});
+        }
+        else if (path[0].includes('steamapps') && path[0].includes('assettocorsa') && !path[0].includes('Documents')) {
+            // Correct
+            gameInstallDir = splitWithIndex(path[0], 'assettocorsa');
+            log(gameInstallDir)
+        };
+    }
+    catch (err) {
+        log(err);
+    };
+};
+
+const newDocumentsPath = (path) => {
+
+    try {
+        if (path == undefined) {
+            // Empty
+            win.webContents.send('notification', {title: 'Empty Documents Path', content: `Please enter an 'assettocorsa' documents path`, type: 'bad', ms: 10000});
+        }
+        else if (!path[0].includes('Documents')) {
+            // Incorrect
+            win.webContents.send('notification', {title: 'Invalid Documents Path', content: `Please enter a documents path that contains the 'assettocorsa' directory`, type: 'bad', ms: 10000});
+        }
+        else if (path[0].includes('Documents') && path[0].includes('assettocorsa')) {
+            // Correct
+            documentsDir = splitWithIndex(path[0], 'Documents');
+        };
+    }
+    catch (err) {
+        log(err);
+    };
+};
+
 // User chooses their steam game path
 ipcMain.on('gamePathMount', () => {
 
     // Give user choice to browse for assettocorsa directory
     gameInstallDirUser = dialog.showOpenDialogSync(win, {
-        title: 'Choose "assettocorsa" file path',
-        properties: ['openDirectory'],
-        defaultPath: `${gameInstallDir}`
+        title: 'Choose "assettocorsa" file path', 
+        properties: ['openDirectory'], 
+        defaultPath: `${gameInstallDir || os.homedir()}`
     });
 
-    // Check chosen game path
-    if (gameInstallDirUser == undefined || gameInstallDirUser == 'undefined' || gameInstallDirUser == '') {
-        // null -- undefined, dialog closed out
-        if (!gameInstallDir) {
-            win.webContents.send('gamePathStatus', {
-                msg: gameInstallDir
-            });
-            win.webContents.send('notification', {
-                title: 'Invalid Installation Path',
-                content: `Please enter a steam installation path`,
-                type: 'bad',
-                ms: 10000
-            });
-        };
+    newGamePath(gameInstallDirUser);
 
-    } else if (!gameInstallDirUser[0].includes('assettocorsa')) {
-        // false
-        win.webContents.send('gamePathStatus', {
-            msg: gameInstallDir
-        });
-        win.webContents.send('notification', {
-            title: 'Invalid Installation Path',
-            content: `Please enter a steam installation path that contains the 'assettocorsa' directory`,
-            type: 'bad',
-            ms: 10000
-        });
-    } else if (gameInstallDirUser[0].includes('assettocorsa')) {
-        if (!gameInstallDirUser[0].includes('Documents')) {
-
-            let checkForSub = gameInstallDirUser[0].split('assettocorsa');
-            if (checkForSub[1]) {
-                gameInstallDir = `${checkForSub[0]}assettocorsa`;
-                win.webContents.send('gamePathStatus', {
-                    msg: gameInstallDir
-                });
-            } else if (!checkForSub[1]) {
-                // true
-                win.webContents.send('gamePathStatus', {
-                    msg: gameInstallDirUser
-                });
-                gameInstallDir = gameInstallDirUser;
-            };
-        } else if (!gameInstallDirUser[0].includes('Documents')) {
-            win.webContents.send('notification', {
-                title: 'Invalid Installation Path',
-                content: `Please enter a steam installation path that contains the 'assettocors' directory`,
-                type: 'bad',
-                ms: 10000
-            });
-        };
-    };
 });
 
 // User chooses their documents game path
@@ -281,29 +299,12 @@ ipcMain.on('documentsPathMount', () => {
     // Open dialog box
     documentsDirUser = dialog.showOpenDialogSync(win, {
         title: 'Choose "assettocorsa" file path',
-        properties: ['openDirectory']
+        properties: ['openDirectory'], 
+        defaultPath: `${documentsDir || os.homedir()}`
     });
 
-    // log(documentsDirUser);
+    newDocumentsPath(documentsDirUser);
 
-    // Check chosen path
-    if (documentsDirUser == undefined || documentsDirUser == 'undefined' || documentsDirUser == '') {
-        // null, error, dialog closed out
-        win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
-    }
-    else if (documentsDirUser[0].includes('Documents') == false) {
-        // Path does not contain the 'Documents' query
-        win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
-    }
-    else if (documentsDirUser[0].includes('assettocorsa') == false) {
-        // Path does not contain the 'assettocorsa' query
-        win.webContents.send('notification', {title: 'Invalid Documents Path', content: 'Please choose a valid documents path for "assettocorsa"', type: 'bad', ms: 10000});
-    }
-    else if (documentsDirUser[0].includes('Documents') && documentsDirUser[0].includes('assettocorsa')) {
-        // Correct path has been chosen
-        win.webContents.send('documentPathStatus', {msg: documentsDirUser});
-        documentsDir = documentsDirUser;
-    };
 });
 
 // Fired when the notification bool value has been changed on the renderer
@@ -359,7 +360,7 @@ ipcMain.on('syncButton', (event, foo) => {
             buttons: ['Cancel', 'Yes, please', 'No, thanks'],
             defaultId: 2,
             title: 'Stop Download?',
-            message: 'Do you want to stop the download?',
+            message: 'Do you want to stop thed download?',
             detail: 'As of Echelon_BETA, Stopping a download may not work properly.'
         };
 
@@ -373,10 +374,26 @@ ipcMain.on('syncButton', (event, foo) => {
     };
 });
 
-const preDownloadConf = () => {
+const checkBeforeDownload = () => {
 
-    // Check if download is stopped
-    if (!isDownloadStopped) {
+    // Check if gameInstallDir and documentsInstallDir are correct and present before downloading
+    if (gameInstallDir || documentsDir) {
+        log('yes');
+        return true;
+    }
+    else {
+
+        // Recurse back to choosing game directories somehow
+
+
+    };
+
+};
+
+const DownloadFinished = async () => {
+
+    // Check if download is stopped AND download is fully done
+    if (!isDownloadStopped || counter == filesToDownload.length) {
 
         // Send complete state for client UI
         win.webContents.send('btnReact', 'finish');
@@ -415,11 +432,11 @@ const downloadFile = (file) => {
 
         res.pipe(
             unzipper.Extract({
-                path: `${gameInstallDir}/content/${file.type}`
+                path: `${gameInstallDir}\\content\\${file.type}`
             })
         );
 
-        // Unzip finish (unknown)
+        // Unzip finish
         res.on('end', () => {
             log('end');
             counter++;
@@ -438,10 +455,8 @@ const downloadFile = (file) => {
     req.on('response', () => {
         log('response');
         if (counter != filesToDownload.length) {
-            win.webContents.send('currentInstallPath', `${gameInstallDir}/${file.filename}`);
-        }
-        else if (counter == filesToDownload.length) {
-            win.webContents.send('downloadDone', 'Finished!');
+            log(`${gameInstallDir}/${file.filename}`);
+            // win.webContents.send('currentInstallPath', `${gameInstallDir}/${file.filename}`);
         };
     });
 
@@ -456,16 +471,20 @@ const downloadFile = (file) => {
 // Start download socket response from server
 socket.on('currentServerResponse', (arr) => {
 
-    // Download each file seperatley
-    for (let i=0; i<arr.response.length; i++) {
-        pushFileToQueue(arr.response[i]);
-        globalFilesCount++;
-        percentTerm = 100 / globalFilesCount;
-    };
+    const check = checkBeforeDownload();
+    if (check) {
 
-    // Do confs after download has done
-    if (counter == filesToDownload.length) {
-        log('done')
+        // Download each file seperatley
+        for (let i=0; i<arr.response.length; i++) {
+            pushFileToQueue(arr.response[i]);
+            globalFilesCount++;
+            percentTerm = 100 / globalFilesCount;
+        };
+
+        // Do confs after download has done
+        if (counter == filesToDownload.length) {
+            log('done')
+        };
     };
 
 });
@@ -474,7 +493,7 @@ socket.on('currentServerResponse', (arr) => {
 socket.on('versionCheck', (serverArr) => {
 
     // Get client version
-    var clientVersionFile = fs.readFileSync(pth.join(__dirname, './content/temp/clientVersion.json'));
+    var clientVersionFile = fs.readFileSync(pth.join(__dirname, '.\\content\\temp\\clientVersion.json'));
     const clientVersion = JSON.parse(clientVersionFile.toString());
     var array = [];
 
@@ -508,12 +527,12 @@ socket.on('versionCheck', (serverArr) => {
 socket.on('connect', () => {
     log('Connected to Server');
     if (isWindowOn) {
-        win.webContents.send('notification', {
-            title: 'Echelon Connected',
-            content: `Echelon successfully connected to the server`,
-            type: 'good',
-            ms: 10000
-        });
+        // win.webContents.send('notification', {
+        //     title: 'Echelon Connected',
+        //     content: `Echelon successfully connected to the server`,
+        //     type: 'good',
+        //     ms: 10000
+        // });
 
         isDownloadStopped = false;
         isServerConnected = true;

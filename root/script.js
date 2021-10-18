@@ -23,6 +23,22 @@ const check = (id, n) => {
     document.getElementById(id).checked = bool;
 };
 
+// Game install path listener
+ipcRenderer.on('gamePathStatus', (event, arr) => {
+    
+    // Configure path on client
+    document.getElementById('pathmount').innerHTML = arr.msg;
+    appStorage.setItem('gameInstallDir', arr.msg);
+});
+
+// Documents path listener
+ipcRenderer.on('documentPathStatus', (event, arr) => {
+    
+    // Configure path on client
+    document.getElementById('documentmount').innerHTML = arr.msg;
+    appStorage.setItem('documentsDir', arr.msg);
+});
+
 ipcRenderer.on('cout', (event, msg) => {
     log(msg);
 });
@@ -44,43 +60,6 @@ ipcRenderer.on('cout', (event, msg) => {
 
 //     // if (array.length <= 0) {}; -- code on main
 //     ipcMain.send('resLocalStorage', array);
-// });
-
-// Game install path listener
-ipcRenderer.on('gamePathStatus', (event, arr) => {
-    
-    document.getElementById('pathmount').innerHTML = arr.msg;
-    // Save install path to appStorage
-    appStorage.setItem('gameInstallDir', arr.msg);
-});
-
-// Mod handler path listener
-ipcRenderer.on('documentPathStatus', (event, arr) => {
-    
-    document.getElementById('documentmount').innerHTML = arr.msg;
-    // Save install path to appStorage
-    appStorage.setItem('documentsDir', arr.msg);
-});
-
-// ? DEPRECATED
-// ipcRenderer.on('downloadState?', (event, rescode) => {
-//     if (rescode === 200) {
-//         log('download started');
-//         // notify user that download has started
-//     } else if (rescode === 206) {
-//         log('download stopped');
-//         // notify user that download has stopped
-//     } else if (rescode === 201) {
-//         log('download finished');
-//         // turn start button opacity back to 1
-//         const btnGo = document.getElementById('btnGo');
-//         const btnGoTop = document.getElementById('btnGoTop');
-        
-//         btnGo.style.pointerEvents = 'auto';
-//         btnGoTop.style.pointerEvents= 'auto';
-//         btnGo.style.opacity = 1;
-//         btnGoTop.style.opacity = 1;
-//     };
 // });
 
 ipcRenderer.on('downloadProgress', (event, msg) => {
@@ -195,7 +174,7 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('pathmount').innerHTML = appStorage.getItem('gameInstallDir');
 
     // Update game documents path to what is in appStorage
-    // document.getElementById('documentmount').innerHTML = appStorage.getItem('gameInstallDir');
+    document.getElementById('documentmount').innerHTML = appStorage.getItem('gameInstallDir');
 
     // Configure checkboxes
     check('cb1', 'flSpec');
@@ -224,10 +203,6 @@ window.addEventListener('DOMContentLoaded', () => {
     
         document.getElementById('demoText2').style.display = 'inline-block';
         document.getElementById('demoText2').style.marginTop = '45px';
-
-        // document.getElementById('titlemount2').style.display = 'none';
-        // document.getElementById('documentsmountButton').style.display = 'none';
-        // document.getElementById('documentmount').style.display = 'none';
 
         document.getElementById('eventdot1').style.display = 'none';
         document.getElementById('eventdot1full').style.display = 'none';
@@ -305,7 +280,7 @@ function createBrowserWindow(url) {
     });
 
     win.loadURL(url);
-}
+};
 
 // Watch for social links click
 document.getElementById('discordClick').addEventListener('click', () => {
