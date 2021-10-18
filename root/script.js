@@ -127,12 +127,10 @@ ipcRenderer.on('serverState', (event, bool) => {
     if (serverState) {
         // change to green
         document.getElementById('statusIcon').innerHTML = '🟢';
-
     }
     else if (!serverState) {
         // change to red
         document.getElementById('statusIcon').innerHTML = '🔴';
-
     };
 });
 
