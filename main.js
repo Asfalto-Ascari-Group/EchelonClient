@@ -56,6 +56,7 @@ const socket = io(`http://35.223.123.5:4644`, {
 // Global variables
 var log = console.log.bind(console);
 var isGamePathFound = false;
+var isDocsPathFound = false;
 var gameInstallDir;
 var documentsDir;
 var isWindowOn = false;
@@ -382,9 +383,7 @@ const checkBeforeDownload = () => {
         return true;
     }
     else {
-
-        // Recurse back to choosing game directories somehow
-
+        win.webContents.send('notification', {title: 'Please Check File Path Settings', content: `The file path settings for one or more type is invalid`, type: 'bad', ms: 10000});
 
     };
 
@@ -393,7 +392,7 @@ const checkBeforeDownload = () => {
 const DownloadFinished = async () => {
 
     // Check if download is stopped AND download is fully done
-    if (!isDownloadStopped || counter == filesToDownload.length) {
+    if (counter == filesToDownload.length) {
 
         // Send complete state for client UI
         win.webContents.send('btnReact', 'finish');
@@ -425,7 +424,7 @@ const downloadFile = (file) => {
 
     // Block download queue
     isDownloadQueueOpen = false;
-    log(file)
+    // log(file)
 
     // Download file
     var req = http.get(file.urlpath, (res) => {
@@ -455,8 +454,9 @@ const downloadFile = (file) => {
     req.on('response', () => {
         log('response');
         if (counter != filesToDownload.length) {
-            log(`${gameInstallDir}/${file.filename}`);
-            // win.webContents.send('currentInstallPath', `${gameInstallDir}/${file.filename}`);
+            let path = `${gameInstallDir}\\${file.filename}`;
+            let newPath = path.split('assettocorsa');
+            win.webContents.send('currentInstallPath', `assettocorsa${newPath[1]}`);
         };
     });
 
@@ -477,13 +477,9 @@ socket.on('currentServerResponse', (arr) => {
         // Download each file seperatley
         for (let i=0; i<arr.response.length; i++) {
             pushFileToQueue(arr.response[i]);
+
             globalFilesCount++;
             percentTerm = 100 / globalFilesCount;
-        };
-
-        // Do confs after download has done
-        if (counter == filesToDownload.length) {
-            log('done')
         };
     };
 
@@ -527,12 +523,6 @@ socket.on('versionCheck', (serverArr) => {
 socket.on('connect', () => {
     log('Connected to Server');
     if (isWindowOn) {
-        // win.webContents.send('notification', {
-        //     title: 'Echelon Connected',
-        //     content: `Echelon successfully connected to the server`,
-        //     type: 'good',
-        //     ms: 10000
-        // });
 
         isDownloadStopped = false;
         isServerConnected = true;

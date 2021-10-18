@@ -72,13 +72,10 @@ ipcRenderer.on('downloadDone', (event, msg) => {
     document.getElementById('demoText3Container').style.display = 'none';
 });
 
-ipcRenderer.on('dlPath', (event, msg) => {
-    document.getElementById('demoText2').innerHTML = '...' + msg;
-});
-
 ipcRenderer.on('currentInstallPath', (event, path) => {
     // log('..' + path.split('\\common')[1].replace(/\\/g, '/'));
-    document.getElementById('demoText2').innerHTML = '..' + path.split('\\common')[1].replace(/\\/g, '/');
+    // document.getElementById('demoText2').innerHTML = '..' + path.split('\\common')[1].replace(/\\/g, '/');
+    document.getElementById('demoText2').innerHTML = '...' + path;
 });
 
 // Mount sends path back to ipcMain when user chooses a steam path
@@ -170,11 +167,10 @@ window.addEventListener('DOMContentLoaded', () => {
         ipcRenderer.send('racingSeries', {type: item, value: bool});
     };
 
-    // Update game install path to what is in appStorage
+    // Update paths from localStorage
     document.getElementById('pathmount').innerHTML = appStorage.getItem('gameInstallDir');
-
-    // Update game documents path to what is in appStorage
-    document.getElementById('documentmount').innerHTML = appStorage.getItem('gameInstallDir');
+    document.getElementById('documentmount').innerHTML = appStorage.getItem('documentsDir');
+    log()
 
     // Configure checkboxes
     check('cb1', 'flSpec');
@@ -473,6 +469,7 @@ ipcRenderer.on('btnReact', (event, type) => {
     };
 });
 
+// Called inline
 const btnGo = () => {
 
     if (canButtonBeUsed) {
@@ -514,6 +511,7 @@ ipcRenderer.on('buttonStart', () => {
     };
 });
 
+// Called inline
 const btnStop = () => {
     ipcRenderer.send('syncButton', 'stop');
 };
