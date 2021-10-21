@@ -15,7 +15,9 @@ var infoCounter = 0;
 var releaseName;
 var canButtonBeUsed = true;
 var serverState = false;
-var downloadState = 'dl';
+// var downloadState = 'dl';
+var isDownlading = new Boolean();
+isDownloading = false;
 
 // Config appStorage entries
 const check = (id, n) => {
@@ -63,13 +65,14 @@ ipcRenderer.on('cout', (event, msg) => {
 // });
 
 ipcRenderer.on('downloadProgress', (event, msg) => {
+    document.getElementById('demoText').style.display = 'auto';
     document.getElementById('demoText').innerHTML = `${msg}%`;
 });
 
 ipcRenderer.on('downloadDone', (event, msg) => {
     document.getElementById('demoText2').innerHTML = msg;
     confStopButton();
-    document.getElementById('demoText3Container').style.display = 'none';
+    document.getElementById('demoText').innerHTML = '';
 });
 
 ipcRenderer.on('currentInstallPath', (event, path) => {
@@ -168,7 +171,6 @@ window.addEventListener('DOMContentLoaded', () => {
     // Update paths from localStorage
     document.getElementById('pathmount').innerHTML = appStorage.getItem('gameInstallDir');
     document.getElementById('documentmount').innerHTML = appStorage.getItem('documentsDir');
-    log()
 
     // Configure checkboxes
     check('cb1', 'flSpec');
@@ -389,25 +391,26 @@ function settingsSyncFlip() {
 };
 
 async function elipAnim() {
-
+    log('function')
     var foo = [' ', '.', '..', '...'];
     var ele = document.getElementById('demoText3');
     var eleC = document.getElementById('demoText3Container');
     var x = 0;
 
-    ele.innerHTML = '';
     eleC.style.display = 'inline-block';
+    ele.innerHTML = '';
+    ele.style.display = 'inline-block';
 
-    ele.innerHTML = 'Downloading Files' + foo[x++];
-    setInterval(() => {
-        if (downloadState == 'dl') {
-            ele.innerHTML = `Downloading Files${foo[x++]}`;
-            x &= 3;
-        };
-        if (downloadState == 'unzip') {
-            ele.innerHTML = `Unzipping Files${foo[x++]}`;
+    ele.innerHTML = ele.innerHTML + foo[x++];
+    const anim = setInterval(() => {
+
+        if (isDownloading) {
+            ele.innerHTML = `${ele.innerHTML}${foo[x++]}`;
             x &= 3;
         }
+        else if (!isDownloading) {
+            clearInterval(anim);
+        };
     }, 650);
 };
 
@@ -419,9 +422,14 @@ ipcRenderer.on('removeStartPos', (event) => {
     document.getElementById('demoText3Container').style.display = 'none';
 });
 
+ipcRenderer.on('uiString', (event, msg) => {
+    document.getElementById('demoText3').innerHTML = msg;
+});
+
 ipcRenderer.on('btnReact', (event, type) => {
 
     if (type == 'go') {
+        log('start')
         const btnGo = document.getElementById('btnGo');
         const btnGoTop = document.getElementById('btnGoTop');
         const btnGoText = document.getElementById('goButtonText');
@@ -441,10 +449,9 @@ ipcRenderer.on('btnReact', (event, type) => {
 
         // Change innerHTML of progress text
         // document.getElementById('demoText2').innerHTML = 'Starting download..';
+        document.getElementById('demoText').style.display = 'auto';
         document.getElementById('demoText').innerHTML = '0%';
         elipAnim();
-
-        // use while loop and setTimeout instead
 
     }
     else if (type == 'finish') {
@@ -463,16 +470,27 @@ ipcRenderer.on('btnReact', (event, type) => {
         // Revert boolean so button can be used again
         canButtonBeUsed = true;
 
+        // Remove UI elements
         document.getElementById('demoText3').style.display = 'none';
     };
 });
 
-// Called inline
+// Button start event
+document.getElementById('btnGo').addEventListener('click', () => {
+    btnGo();
+});
 const btnGo = () => {
 
     if (canButtonBeUsed) {
         ipcRenderer.send('syncButton', 'start');
     };
+};
+
+document.getElementById('btnStop').addEventListener('click', () => {
+    btnStop();
+});
+const btnStop = () => {
+    ipcRenderer.send('syncButton', 'stop');
 };
 
 ipcRenderer.on('buttonStart', () => {
@@ -483,8 +501,9 @@ ipcRenderer.on('buttonStart', () => {
     element.style.opacity = 1;
     element.innerHTML = '<ReactAnimatedEllipsis/>';
 
-    // Disable use of button
+    // Swap booleans
     canButtonBeUsed = false;
+    isDownloading = true;
 
     // Loop through appStorage and send module key&value pairs to ipcMain
     var array = [];
@@ -498,7 +517,6 @@ ipcRenderer.on('buttonStart', () => {
             };
         };
     };
-    // ^ deprecated ?
 
     // Check if series has been selected initially
     if (array.length == 0) {
@@ -508,11 +526,6 @@ ipcRenderer.on('buttonStart', () => {
         ipcRenderer.send('getCurrent', {arr: array, notis: appStorage.getItem('notifications')});
     };
 });
-
-// Called inline
-const btnStop = () => {
-    ipcRenderer.send('syncButton', 'stop');
-};
 
 ipcRenderer.on('buttonStop', () => {
 
@@ -534,8 +547,10 @@ ipcRenderer.on('buttonStop', () => {
         btnGoTop.style.opacity = 1;
         btnGoText.style.opacity = 1;
 
-        // Revert boolean so button can be used again
+        // Swap booleans
         canButtonBeUsed = true;
+        isDownloading = false;
+
     }, 600);
     
 });

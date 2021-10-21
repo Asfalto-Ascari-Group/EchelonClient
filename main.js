@@ -1,4 +1,4 @@
-const { BrowserWindow, app, ipcMain, autoUpdater, dialog, Notification } = require('electron');
+const { BrowserWindow, app, ipcMain, dialog, Notification } = require('electron');
 const { io } = require('socket.io-client');
 const fs = require('fs');
 const { getGamePath } = require('steam-game-path');
@@ -9,39 +9,8 @@ const { time } = require('console');
 const path = require('path');
 const async = require('async');
 const os = require('os');
-// import {getDownloadsFolder} from 'platform-folders';
 
 require('dotenv').config();
-
-// Configure electron autoUpdater
-// require('update-electron-app')({
-//     repo: 'https://github.com/Asfalto-Ascari-Group/EchelonClient-Release-Stable',
-//     updateInterval: '5 minutes',
-//     logger: require('electron-log')
-// });
-
-// autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-//     const dialogOpts = {
-//         type: 'info',
-//         buttons: ['Restart', 'Later'],
-//         title: 'Application Update',
-//         message: process.platform === 'win32' ? releaseNotes : releaseName,
-//         detail: 'A new version has been downloaded. Restart the application to apply the updates.'
-//     };
-
-//     dialog.showMessageBox(dialogOpts).then((returnValue) => {
-//         if (returnValue.response === 0) autoUpdater.quitAndInstall();
-//     });
-// });
-
-// autoUpdater.on('error', msg => {
-//     console.error('There was a problem updating the application');
-//     console.error(msg);
-// });
-
-// autoUpdater.on('checking-for-update', () => {
-//     win.webContents.send('log', 'hit');
-// });
 
 // Define variable connection
 const socket = io(`http://35.223.123.5:4644`, {
@@ -55,8 +24,6 @@ const socket = io(`http://35.223.123.5:4644`, {
 
 // Global variables
 var log = console.log.bind(console);
-var isGamePathFound = false;
-var isDocsPathFound = false;
 var gameInstallDir;
 var documentsDir;
 var isWindowOn = false;
@@ -347,6 +314,7 @@ ipcMain.on('getCurrent', (event, arr) => {
     socket.emit('getCurrent', {
         modules: chosenModules
     });
+    win.webContents.send('uiString', 'Fetching Files');
     win.webContents.send('btnReact', 'go');
     notisChoice = arr.notis;
 });
@@ -379,32 +347,33 @@ const checkBeforeDownload = () => {
 
     // Check if gameInstallDir and documentsInstallDir are correct and present before downloading
     if (gameInstallDir || documentsDir) {
-        log('yes');
         return true;
     }
     else {
         win.webContents.send('notification', {title: 'Please Check File Path Settings', content: `The file path settings for one or more type is invalid`, type: 'bad', ms: 10000});
-
+        return false;
     };
-
 };
 
-const DownloadFinished = async () => {
+const DownloadFinished = () => {
 
-    // Check if download is stopped AND download is fully done
-    if (counter == filesToDownload.length) {
+    // Send complete state for client UI
+    win.webContents.send('btnReact', 'finish');
+    win.webContents.send('downloadDone', 'Syncronise Finished!');
 
-        // Send complete state for client UI
-        win.webContents.send('btnReact', 'finish');
-        win.webContents.send('downloadDone', 'Finished!');
+    // Reset ALL dl variables
+    globalFilesCount = 0;
+    percentTerm = 0;
+    counter = 0;
+    totalPercent = 0;
+    isDownloadQueueOpen = true;
 
-        // Check for notification boolean
-        if (notisChoice == 'true') {
-            const notification = new Notification({
-                title: `Echelon has Finished Syncing`,
-                body: 'Your Assetto Corsa content is synchronised'
-            }).show();
-        };
+    // Check for notification boolean
+    if (notisChoice == 'true') {
+        const notification = new Notification({
+            title: `Echelon has Finished Syncing`,
+            body: 'Your Assetto Corsa content is synchronised'
+        }).show();
     };
 };
 
@@ -413,18 +382,21 @@ const pushFileToQueue = (file) => {
     // Push file to queue
     filesToDownload.push(file);
 
+    // Configure variables
+    globalFilesCount++;
+    percentTerm = 100 / globalFilesCount;
+    // -- 2.99999999999999976
+
     // Check if queue is in use
     if (isDownloadQueueOpen) {
         downloadFile(file);
     };
-
 };
 
 const downloadFile = (file) => {
 
     // Block download queue
     isDownloadQueueOpen = false;
-    // log(file)
 
     // Download file
     var req = http.get(file.urlpath, (res) => {
@@ -437,7 +409,7 @@ const downloadFile = (file) => {
 
         // Unzip finish
         res.on('end', () => {
-            log('end');
+            // log('end');
             counter++;
             totalPercent += percentTerm;
             win.webContents.send('downloadProgress', Math.trunc(totalPercent));
@@ -445,41 +417,49 @@ const downloadFile = (file) => {
             isDownloadQueueOpen = true;
             if (counter != globalFilesCount) {
                 downloadFile(filesToDownload[0]);
+            }
+            else if (counter == globalFilesCount) {
+                DownloadFinished();
             };
         });
 
     });
+
+    // Request options
+    req.shouldKeepAlive = false;
+    req.setTimeout(60000);
     
     // Initial file download
     req.on('response', () => {
-        log('response');
+        // log('response');
+        win.webContents.send('uiString', 'Downloading Files');
         if (counter != filesToDownload.length) {
             let path = `${gameInstallDir}\\${file.filename}`;
             let newPath = path.split('assettocorsa');
             win.webContents.send('currentInstallPath', `assettocorsa${newPath[1]}`);
         };
     });
-
-    // Destroy request when file is completley done
-    req.on('close', () => {
-        req.end();
-        req.destroy();
-    });
-
 };
 
 // Start download socket response from server
 socket.on('currentServerResponse', (arr) => {
 
-    const check = checkBeforeDownload();
-    if (check) {
+    if (checkBeforeDownload()) {
+        log({
+            "isDownloadStopped": isDownloadStopped,
+            "filesToDownload": filesToDownload,
+            "isDownloadQueueOpen": isDownloadQueueOpen,
+            "globalFilesCount": globalFilesCount,
+            "percentTerm": percentTerm,
+            "counter": counter,
+            "totalPercent": totalPercent
+        });
+
+        win.webContents.send('uiString', 'Starting Download');
 
         // Download each file seperatley
         for (let i=0; i<arr.response.length; i++) {
             pushFileToQueue(arr.response[i]);
-
-            globalFilesCount++;
-            percentTerm = 100 / globalFilesCount;
         };
     };
 

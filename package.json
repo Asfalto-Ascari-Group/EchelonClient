@@ -20,7 +20,6 @@
     "http": "^0.0.1-security",
     "os": "^0.1.2",
     "performance": "^1.4.0",
-    "platform-folders": "^0.5.4",
     "public-ip": "^4.0.4",
     "react-animated-ellipsis": "^1.0.0",
     "shell": "^0.5.0",
