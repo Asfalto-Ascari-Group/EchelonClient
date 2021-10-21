@@ -258,7 +258,6 @@ ipcMain.on('gamePathMount', () => {
     });
 
     newGamePath(gameInstallDirUser);
-
 });
 
 // User chooses their documents game path
@@ -401,6 +400,7 @@ const downloadFile = (file) => {
     // Download file
     var req = http.get(file.urlpath, (res) => {
 
+        log(file)
         res.pipe(
             unzipper.Extract({
                 path: `${gameInstallDir}\\content\\${file.type}`
@@ -423,6 +423,10 @@ const downloadFile = (file) => {
             };
         });
 
+        res.on('error', (error) => {
+            log(error)
+        });
+
     });
 
     // Request options
@@ -438,6 +442,10 @@ const downloadFile = (file) => {
             let newPath = path.split('assettocorsa');
             win.webContents.send('currentInstallPath', `assettocorsa${newPath[1]}`);
         };
+    });
+
+    req.on('error', (error) => {
+        log(error)
     });
 };
 

@@ -391,21 +391,20 @@ function settingsSyncFlip() {
 };
 
 async function elipAnim() {
-    log('function')
-    var foo = [' ', '.', '..', '...'];
+
+    var foo = ['', '.', '..', '...'];
     var ele = document.getElementById('demoText3');
     var eleC = document.getElementById('demoText3Container');
     var x = 0;
 
     eleC.style.display = 'inline-block';
-    ele.innerHTML = '';
     ele.style.display = 'inline-block';
 
-    ele.innerHTML = ele.innerHTML + foo[x++];
+    ele.innerHTML = `${ele.innerHTML.split('.')[0]}${foo[x++]}`;
     const anim = setInterval(() => {
 
         if (isDownloading) {
-            ele.innerHTML = `${ele.innerHTML}${foo[x++]}`;
+            ele.innerHTML = `${ele.innerHTML.split('.')[0]}${foo[x++]}`;
             x &= 3;
         }
         else if (!isDownloading) {
@@ -429,7 +428,6 @@ ipcRenderer.on('uiString', (event, msg) => {
 ipcRenderer.on('btnReact', (event, type) => {
 
     if (type == 'go') {
-        log('start')
         const btnGo = document.getElementById('btnGo');
         const btnGoTop = document.getElementById('btnGoTop');
         const btnGoText = document.getElementById('goButtonText');
