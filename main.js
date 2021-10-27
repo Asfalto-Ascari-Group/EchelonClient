@@ -42,11 +42,14 @@ var globalFilesCount = 0;
 var percentTerm = 0;
 var counter = 0;
 var totalPercent = 0;
+var clientLoadProgress = false;
+var mainLoadProgress = false;
 
 // Configure window options
 var win;
 app.whenReady();
 
+// Declare createWindow function
 function createWindow() {
     win = new BrowserWindow({
         height: 870,
@@ -74,6 +77,7 @@ app.whenReady().then(() => {
             createWindow();
         };
     });
+    mainLoadProgress = true;
 });
 
 // If all windows in this context are closed
@@ -177,6 +181,14 @@ ipcMain.on('windowLoad', (event, arr) => {
 
     // };
 
+});
+
+// Listen for path incoming
+ipcMain.on('pathmount', (event, msg) => {
+    gameInstallDir = msg;
+});
+ipcMain.on('documentmount', (event, msg) => {
+    documentsDir = msg;
 });
 
 // Remove paths past 'assettocorsa'
@@ -345,7 +357,7 @@ ipcMain.on('syncButton', (event, foo) => {
 const checkBeforeDownload = () => {
 
     // Check if gameInstallDir and documentsInstallDir are correct and present before downloading
-    if (gameInstallDir || documentsDir) {
+    if (gameInstallDir != undefined || documentsDir != undefined) {
         return true;
     }
     else {
@@ -360,7 +372,7 @@ const DownloadFinished = () => {
     win.webContents.send('btnReact', 'finish');
     win.webContents.send('downloadDone', 'Syncronise Finished!');
 
-    // Reset ALL dl variables
+    // Reset ALL download variables
     globalFilesCount = 0;
     percentTerm = 0;
     counter = 0;
@@ -400,12 +412,18 @@ const downloadFile = (file) => {
     // Download file
     var req = http.get(file.urlpath, (res) => {
 
-        log(file)
-        res.pipe(
-            unzipper.Extract({
-                path: `${gameInstallDir}\\content\\${file.type}`
-            })
-        );
+        // Make a check for module type and selector
+        if (file.moduleType == 'setups') {
+            log('setups');
+            log(`${documentsDir}\\${file.selector}`);
+            // let docsPath = fs.createWriteStream(`${documentsDir}\\assettocorsa\\${file.selector}`);
+            res.pipe(unzipper.Extract({path: `${documentsDir}\\${file.selector}`}));
+        }
+        else if (file.moduleType == 'assets') {
+            log('assets');
+            res.pipe(unzipper.Extract({path: `${gameInstallDir}\\content\\${file.type}`}));
+        };
+
 
         // Unzip finish
         res.on('end', () => {
@@ -444,30 +462,38 @@ const downloadFile = (file) => {
         };
     });
 
+    // Catch error event
     req.on('error', (error) => {
-        log(error)
+        log(error);
     });
 };
 
 // Start download socket response from server
 socket.on('currentServerResponse', (arr) => {
+    let filesAmount = arr.response.length + arr.setups.appsJson.length + arr.setups.contentJson.length;
+    let payload = [];
+    log(documentsDir);
+    log(gameInstallDir);
 
+    for (item of arr.response) {
+        payload.push(item);
+    };
+
+    for (item of arr.setups.appsJson) {
+        payload.push(item);
+    };
+
+    for (item of arr.setups.contentJson) {
+        payload.push(item);
+    };
+    
     if (checkBeforeDownload()) {
-        log({
-            "isDownloadStopped": isDownloadStopped,
-            "filesToDownload": filesToDownload,
-            "isDownloadQueueOpen": isDownloadQueueOpen,
-            "globalFilesCount": globalFilesCount,
-            "percentTerm": percentTerm,
-            "counter": counter,
-            "totalPercent": totalPercent
-        });
 
         win.webContents.send('uiString', 'Starting Download');
 
         // Download each file seperatley
-        for (let i=0; i<arr.response.length; i++) {
-            pushFileToQueue(arr.response[i]);
+        for (let i=0; i < filesAmount; i++) {
+            pushFileToQueue(payload[i]);
         };
     };
 
@@ -505,6 +531,11 @@ socket.on('versionCheck', (serverArr) => {
             });
         };
     };
+});
+
+// Listen for client load event
+ipcMain.on('clientLoaded', () => {
+    clientLoadProgress = true;
 });
 
 // Watch for server connection event

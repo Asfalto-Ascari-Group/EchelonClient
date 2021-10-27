@@ -15,7 +15,6 @@ var infoCounter = 0;
 var releaseName;
 var canButtonBeUsed = true;
 var serverState = false;
-// var downloadState = 'dl';
 var isDownlading = new Boolean();
 isDownloading = false;
 
@@ -101,11 +100,6 @@ document.getElementById('btnMin').addEventListener('click', () => {
     remote.BrowserWindow.getFocusedWindow().minimize();
 });
 
-// Listen for release name from main
-ipcRenderer.on('releaseName', (event, rel) => {
-    releaseName = rel;
-});
-
 ipcRenderer.on('sendSeriesVersion', (event, arr) => {
     if (arr.bool == 'bad') {
         document.getElementById(`${arr.module.type}VersionContent`).innerHTML = '❌ Out of Date';
@@ -151,6 +145,7 @@ const confStopButton = () => {
     btnStopText.style.opacity = 0.3;
 };
 
+// When all content is loaded on client side
 window.addEventListener('DOMContentLoaded', () => {
 
     // Send load event to ipcMain
@@ -168,9 +163,13 @@ window.addEventListener('DOMContentLoaded', () => {
         ipcRenderer.send('racingSeries', {type: item, value: bool});
     };
 
-    // Update paths from localStorage
-    document.getElementById('pathmount').innerHTML = appStorage.getItem('gameInstallDir');
-    document.getElementById('documentmount').innerHTML = appStorage.getItem('documentsDir');
+    // Configure & update paths from local storage
+    let pathmount = appStorage.getItem('gameInstallDir');
+    let documentmount = appStorage.getItem('documentsDir');
+    document.getElementById('pathmount').innerHTML = pathmount;
+    document.getElementById('documentmount').innerHTML = documentmount;
+    ipcRenderer.send('pathmount', pathmount);
+    ipcRenderer.send('documentmount', documentmount);
 
     // Configure checkboxes
     check('cb1', 'flSpec');
@@ -228,6 +227,8 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('demoText2').style.display = 'inline-block';
         document.getElementById('demoText2').style.marginTop = '45px';
     };
+
+    ipcRenderer.send('clientLoaded');
 });
 
 function valueParse(elem) {
@@ -266,7 +267,7 @@ function createBrowserWindow(url) {
         height: 600,
         width: 800,
         icon: '.\\src\\images\\thumb.png',
-        title: 'Asfalto Ascari Discord',
+        title: 'Echelon Media',
         resizable: false,
         webPreferences: {
             nodeIntegration: true,
