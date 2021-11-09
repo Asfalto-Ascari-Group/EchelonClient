@@ -1,4 +1,4 @@
-# EchelonClient
+# Echelon Client (Stable)
 Stable Release for Project Echelon.
 
 ### Releases
