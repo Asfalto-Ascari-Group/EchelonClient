@@ -58,6 +58,7 @@ function createWindow() {
         icon: '.\\root\\src\\images\\thumb.png',
         resizable: false,
         frame: false,
+        show: false,
         webPreferences: {
             nodeIntegration: true,
             enableRemoteModule: true,
@@ -66,6 +67,11 @@ function createWindow() {
     });
 
     win.loadFile('root/index.html');
+
+    win.webContents.on('did-finish-load', function() {
+        win.show();
+    });
+    
 };
 
 // When app is ready, create window

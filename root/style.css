@@ -1215,3 +1215,13 @@ svg * {
 /* ### */
 /* plgrnd */
 /* ### */
+
+body {
+    -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
+            animation: fadein 2s;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}

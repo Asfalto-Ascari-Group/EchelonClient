@@ -147,6 +147,7 @@ const confStopButton = () => {
 
 // When all content is loaded on client side
 window.addEventListener('DOMContentLoaded', () => {
+    ipcRenderer.send('cout', 'here c');
 
     // Send load event to ipcMain
     ipcRenderer.send('windowLoad', {notis: appStorage.getItem('notifications') === 'true'});
