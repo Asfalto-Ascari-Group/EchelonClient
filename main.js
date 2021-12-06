@@ -340,7 +340,7 @@ ipcMain.on('syncButton', (event, foo) => {
             buttons: ['Cancel', 'Yes, please', 'No, thanks'],
             defaultId: 2,
             title: 'Stop Download?',
-            message: 'Do you want to stop thed download?',
+            message: 'Do you want to stop the download?',
             detail: 'As of Echelon_BETA, Stopping a download may not work properly.'
         };
 
