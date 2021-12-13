@@ -800,6 +800,24 @@ svg * {
     position: absolute;
 }
 
+#lastSyncContainer {
+    margin-left: -2.5px;
+    margin-top: 0px;
+    position: absolute;
+}
+
+#lastSyncText {
+    text-align: right;
+    align-items: right;
+    justify-content: right;
+    float: right;
+    margin-left: 3px;
+    font-family: 'MT-Light';
+    color: rgba(255, 255, 255, 0.152);
+    font-size: 9px;
+    word-break: break-all;
+}
+
 #currentPath {
     font-family: 'MT-Light';
     color: white;
@@ -1146,8 +1164,8 @@ svg * {
     top: 0;
     width: 1.4em;
     height: 1.4em;
-    border: 1px solid rgb(0, 0, 0);
-    background: rgb(37, 37, 38);
+    border: 1px solid rgba(182, 182, 182, 0.09);
+    background: rgba(37, 37, 38, 0.494);
     border-radius: .2em;
     -webkit-app-region: no-drag;
     text-align: center;

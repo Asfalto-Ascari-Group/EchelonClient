@@ -5,15 +5,12 @@ const { getGamePath } = require('steam-game-path');
 const unzipper = require('unzipper');
 const http = require('http');
 const pth = require('path');
-const { time } = require('console');
-const path = require('path');
-const async = require('async');
 const os = require('os');
 
 require('dotenv').config();
 
 // Define variable connection
-const socket = io(`http://35.223.123.5:4644`, {
+const socket = io(`http://35.225.47.101:4644`, {
     reconnection: true,
     pingTimeout: 1000,
     pingInterval: 1000,

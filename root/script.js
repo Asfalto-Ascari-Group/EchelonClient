@@ -1,4 +1,4 @@
-const { mainWindow, ipcRenderer, remote, ipcMain } = require('electron');
+const { mainWindow, ipcRenderer, remote, ipcMain, app } = require('electron');
 const ReactAnimatedEllipsis = require('react-animated-ellipsis');
 const appStorage = window.localStorage;
 
@@ -17,6 +17,9 @@ var canButtonBeUsed = true;
 var serverState = false;
 var isDownlading = new Boolean();
 isDownloading = false;
+var DateHours;
+var DateMinutes;
+var DateDay;
 
 // Config appStorage entries
 const check = (id, n) => {
@@ -180,6 +183,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // Configure stop button
     confStopButton();
 
+    // Configure last sync date
+    document.getElementById('lastSyncText').innerHTML = `Last Sync: ${GetLocalItem('DateDay')}<sup>th</sup>   ${GetLocalItem('DateHours')}:${GetLocalItem('DateMinutes')}`;
+
     // Are you developing ? = true/false
     // -- true = shows content that is NOT in the stable release
     const devBool = false;
@@ -281,7 +287,8 @@ function createBrowserWindow(url) {
 
 // Watch for social links click
 document.getElementById('discordClick').addEventListener('click', () => {
-    createBrowserWindow('https://discord.gg/GvB7k7kp7g');
+    // createBrowserWindow('https://discord.gg/GvB7k7kp7g');
+    require("shell").openExternal("https://discord.gg/GvB7k7kp7g")
 });
 document.getElementById('githubClick').addEventListener('click', () => {
     createBrowserWindow('https://github.com/Asfalto-Ascari-Group/EchelonClient-Release-Stable/releases');
@@ -471,8 +478,25 @@ ipcRenderer.on('btnReact', (event, type) => {
 
         // Remove UI elements
         document.getElementById('demoText3').style.display = 'none';
+
+        // Change last sync ui
+        DateHours = new Date().getHours();
+        DateDay = new Date().getDate();
+        DateMinutes = new Date().getMinutes();
+        SetLocalItem('DateHours', DateHours);
+        SetLocalItem('DateDay', DateDay);
+        SetLocalItem('DateMinutes', DateMinutes);
+        document.getElementById('lastSyncText').innerHTML = `Last Sync: ${DateDay}<sup>th</sup>   ${DateHours}:${DateMinutes}`;
     };
 });
+
+const SetLocalItem = (n, c) => {
+    localStorage.setItem(n, c);
+};
+
+const GetLocalItem = (n) => {
+    return localStorage.getItem(n);
+};
 
 // Button start event
 document.getElementById('btnGo').addEventListener('click', () => {
