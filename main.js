@@ -1,4 +1,4 @@
-const { BrowserWindow, app, autoUpdater, ipcMain, dialog, Notification } = require('electron');
+const { BrowserWindow, app, ipcMain, dialog, Notification } = require('electron');
 const { io } = require('socket.io-client');
 const fs = require('fs');
 const { getGamePath } = require('steam-game-path');
