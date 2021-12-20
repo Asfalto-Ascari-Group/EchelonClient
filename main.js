@@ -2,12 +2,20 @@ const { BrowserWindow, app, autoUpdater, ipcMain, dialog, Notification } = requi
 const { io } = require('socket.io-client');
 const fs = require('fs');
 const { getGamePath } = require('steam-game-path');
+const isDev = require('electron-is-dev');
 const unzipper = require('unzipper');
 const http = require('http');
 const pth = require('path');
 const os = require('os');
 
 require('dotenv').config();
+
+// Check if electron is in dev or production
+if (isDev) {
+	console.log('Running in development');
+} else if (!isDev) {
+	console.log('Running in production');
+};
 
 // Define variable connection
 const socket = io(`http://34.69.110.17:4644`, {
