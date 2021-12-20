@@ -36,6 +36,12 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
     });
 });
 
+// Catch autoUpdater errors
+autoUpdater.on('error', message => {
+    console.error('There was a problem updating the application');
+    console.error(message);
+});
+
 // Define variable connection
 const socket = io(`http://34.69.110.17:4644`, {
     reconnection: true,
@@ -98,15 +104,6 @@ function createWindow() {
     
 };
 
-// Check if electron is in dev or production
-if (isDev) {
-	console.log('Running in development');
-    win.webContents.send('cout', 'Running in development');
-} else if (!isDev) {
-	console.log('Running in production');
-    win.webContents.send('cout', 'Running in production');
-};
-
 // When app is ready, create window
 app.whenReady().then(() => {
     createWindow();
@@ -125,6 +122,15 @@ app.on('window-all-closed', () => {
         app.quit();
     };
 });
+
+// Check if electron is in dev or production
+if (isDev) {
+	console.log('Running in development');
+    win.webContents.send('cout', 'Running in development');
+} else if (!isDev) {
+	console.log('Running in production');
+    win.webContents.send('cout', 'Running in production');
+};
 
 // DEPRECATED
 // const findDocumentsFallback = (baseuid) => {
