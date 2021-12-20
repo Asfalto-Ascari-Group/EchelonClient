@@ -7,6 +7,25 @@ const unzipper = require('unzipper');
 const http = require('http');
 const pth = require('path');
 const os = require('os');
+const electronInstaller = require('electron-winstaller');
+
+const config = async () => {
+    // NB: Use this syntax within an async function, Node does not have support for
+    //     top-level await as of Node 12.
+    try {
+        await electronInstaller.createWindowsInstaller({
+        appDirectory: '/echelon-win32-x64',
+        outputDirectory: '/installer',
+        authors: 'My App Inc.',
+        exe: 'myapp.exe'
+        });
+        console.log('It worked!');
+    } catch (e) {
+        console.log(`No dice: ${e.message}`);
+    };
+};
+
+config();
 
 require('dotenv').config();
 
@@ -16,11 +35,6 @@ if (isDev) {
 } else if (!isDev) {
 	console.log('Running in production');
 };
-
-const server = 'https://your-deployment-url.com'
-const url = `${server}/update/${process.platform}/${app.getVersion()}`
-
-autoUpdater.setFeedURL({ url })
 
 // Define variable connection
 const socket = io(`http://34.69.110.17:4644`, {
