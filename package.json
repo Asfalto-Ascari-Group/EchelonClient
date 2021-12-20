@@ -4,6 +4,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "is": "node init_installer.js",
     "build": "npx electron-packager . --platform=win32 --arch=x64 --icon=root/src/images/thumb.ico --overwrite"
   },
   "author": "AsfaltoAscari",
