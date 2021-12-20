@@ -11,15 +11,6 @@ const os = require('os');
 
 require('dotenv').config();
 
-// Check if electron is in dev or production
-if (isDev) {
-	console.log('Running in development');
-    win.webContents.send('cout', 'Running in development');
-} else if (!isDev) {
-	console.log('Running in production');
-    win.webContents.send('cout', 'Running in production');
-};
-
 // Configure update server
 const server = 'https://github.com/Asfalto-Ascari-Group/EchelonClient/releases';
 const url = `${server}/update/${process.platform}/${app.getVersion()}`;
@@ -105,6 +96,15 @@ function createWindow() {
         win.show();
     });
     
+};
+
+// Check if electron is in dev or production
+if (isDev) {
+	console.log('Running in development');
+    win.webContents.send('cout', 'Running in development');
+} else if (!isDev) {
+	console.log('Running in production');
+    win.webContents.send('cout', 'Running in production');
 };
 
 // When app is ready, create window
