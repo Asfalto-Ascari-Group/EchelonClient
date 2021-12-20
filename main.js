@@ -8,6 +8,7 @@ const http = require('http');
 const pth = require('path');
 const os = require('os');
 
+
 require('dotenv').config();
 
 // Check if electron is in dev or production
