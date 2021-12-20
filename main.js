@@ -14,10 +14,11 @@ const config = async () => {
     //     top-level await as of Node 12.
     try {
         await electronInstaller.createWindowsInstaller({
-        appDirectory: '/echelon-win32-x64',
+        appDirectory: 'E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/echelon-win32-x64',
         outputDirectory: '/installer',
+        description: 'cum',
         authors: 'My App Inc.',
-        exe: 'myapp.exe'
+        exe: 'echelon.exe'
         });
         console.log('It worked!');
     } catch (e) {
