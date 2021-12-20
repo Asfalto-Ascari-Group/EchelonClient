@@ -17,6 +17,11 @@ if (isDev) {
 	console.log('Running in production');
 };
 
+const server = 'https://your-deployment-url.com'
+const url = `${server}/update/${process.platform}/${app.getVersion()}`
+
+autoUpdater.setFeedURL({ url })
+
 // Define variable connection
 const socket = io(`http://34.69.110.17:4644`, {
     reconnection: true,
