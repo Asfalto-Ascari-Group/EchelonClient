@@ -4,6 +4,7 @@ const fs = require('fs');
 const { getGamePath } = require('steam-game-path');
 const isDev = require('electron-is-dev');
 const unzipper = require('unzipper');
+require('update-electron-app')();
 const http = require('http');
 const pth = require('path');
 const os = require('os');
