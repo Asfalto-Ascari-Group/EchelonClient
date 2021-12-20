@@ -369,15 +369,17 @@ function createNotification(title, content, type, ms) {
     // If debounce is 0 then make it promise based (internal) - ???
 };
 
+// Animation duration in milliseconds
 var transDuration = 150;
 function settingsSyncFold() {
 
-    const topelem = document.getElementById('contentTL');
+    var topelem = document.getElementById('contentTL');
+    var botelem = document.getElementById('subContentTL');
+
     topelem.style.transition = `opacity .${transDuration}s`;
     topelem.style.opacity = 0;
     setTimeout(() => {topelem.style.display = 'none';}, transDuration);
 
-    const botelem = document.getElementById('subContentTL');
     botelem.style.opacity = 0;
     botelem.style.transition = `opacity .${transDuration}s`;
     setTimeout(() => {botelem.style.display = 'block';}, transDuration);
@@ -386,12 +388,13 @@ function settingsSyncFold() {
 
 function settingsSyncFlip() {
 
-    const botelem = document.getElementById('subContentTL');
+    var botelem = document.getElementById('subContentTL');
+    var topelem = document.getElementById('contentTL');
+
     botelem.style.transition = `opacity .${transDuration}s`;
     botelem.style.opacity = 0;
     setTimeout(() => {botelem.style.display = 'none';}, transDuration);
 
-    const topelem = document.getElementById('contentTL');
     topelem.style.opacity = 0;
     topelem.style.transition = `opacity .${transDuration}s`;
     setTimeout(() => {topelem.style.display = 'block';}, transDuration);

@@ -410,7 +410,7 @@ html {
     margin-left: 3px;
     height: 21px;
     -webkit-app-region: no-drag;
-    transition: 0.2s ease-in-out;
+    transition: 0.15s ease-in-out;
 }
 
 #settingsCogSync:hover {

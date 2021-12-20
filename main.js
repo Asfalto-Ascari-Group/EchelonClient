@@ -10,7 +10,7 @@ const os = require('os');
 require('dotenv').config();
 
 // Define variable connection
-const socket = io(`http://35.225.47.101:4644`, {
+const socket = io(`http://34.69.110.17:4644`, {
     reconnection: true,
     pingTimeout: 1000,
     pingInterval: 1000,
