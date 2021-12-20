@@ -9,7 +9,7 @@ const http = require('http');
 const pth = require('path');
 const os = require('os');
 
-// Configure desktop shortcuts
+// Add desktop shortcut
 if(require('electron-squirrel-startup')) return;
 
 require('dotenv').config();
