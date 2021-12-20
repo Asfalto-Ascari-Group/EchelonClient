@@ -10,6 +10,10 @@ try {
         name: 'Echelon',
         description: 'Project Echelon Executable File',
         authors: 'AsfaltoAscari',
+        owners: 'Admin_AsfaltoAscari',
+        iconUrl: 'E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/root/src/images/thumb.ico',
+        setupIcon: 'E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/root/src/images/thumb.ico',
+        setupExe: 'EchelonSetup.exe',
         exe: 'echelon.exe'
     });
     console.log('It worked!');
