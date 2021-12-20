@@ -7,26 +7,6 @@ const unzipper = require('unzipper');
 const http = require('http');
 const pth = require('path');
 const os = require('os');
-const electronInstaller = require('electron-winstaller');
-
-const config = async () => {
-    // NB: Use this syntax within an async function, Node does not have support for
-    //     top-level await as of Node 12.
-    try {
-        await electronInstaller.createWindowsInstaller({
-        appDirectory: 'E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/echelon-win32-x64',
-        outputDirectory: '/installer',
-        description: 'cum',
-        authors: 'My App Inc.',
-        exe: 'echelon.exe'
-        });
-        console.log('It worked!');
-    } catch (e) {
-        console.log(`No dice: ${e.message}`);
-    };
-};
-
-config();
 
 require('dotenv').config();
 
@@ -79,7 +59,7 @@ function createWindow() {
     win = new BrowserWindow({
         height: 870,
         width: 1080,
-        title: `Project Echelon @${process.env.VERSION}`,
+        title: `Project Echelon`,
         icon: '.\\root\\src\\images\\thumb.png',
         resizable: false,
         frame: false,

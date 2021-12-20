@@ -1,0 +1,40 @@
+﻿<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  <Product Id="*" Name="echelon Deployment Tool" Language="1033" Codepage="1252" Version="!(bind.FileVersion.echelon.exe)" UpgradeCode="425d9392-303e-50f1-9c44-dfc011cc3148" Manufacturer="author1">
+
+    <Package Description="This package installs a deployment tool for echelon. Not echelon itself. echelon is only installed if a user logs into the machine." InstallScope="perMachine" Comments="Comments" InstallerVersion="200" Compressed="yes" Platform="x86"/>
+    <MajorUpgrade AllowSameVersionUpgrades="yes" DowngradeErrorMessage="A later version of this product is already installed. Setup will now exit."/>
+    <Media Id="1" Cabinet="contents.cab" EmbedCab="yes" CompressionLevel="high"/>
+
+    <PropertyRef Id="NETFRAMEWORK45" />
+
+    <Condition Message="This application requires .NET Framework 4.5 or higher. Please install the latest .NET Framework then run this installer again.">
+      <![CDATA[Installed OR NETFRAMEWORK45]]>
+    </Condition>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="echelon Deployment" />
+      </Directory>
+    </Directory>
+
+    <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
+      <Component Id="echelon.exe" Guid="b3ad0309-b1de-5576-a4ca-b9ebb9ea8b85" Win64="no">
+        <File Id="echelon.exe" Name="echelonDeploymentTool.exe" Source="./Setup.exe" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <DirectoryRef Id="TARGETDIR">
+      <Component Id="RegistryEntries" Guid="885893f9-3b29-5a47-a43b-859c844b86ba" Win64="no">
+        <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run">
+          <RegistryValue Type="expandable" Name="echelonDeployment" Value="&quot;[#echelon.exe]&quot; --checkInstall" />
+        </RegistryKey>
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="MainApplication" Title="Main Application" Level="1">
+      <ComponentRef Id="echelon.exe" />
+      <ComponentRef Id="RegistryEntries" />
+    </Feature>
+  </Product>
+</Wix>
+
