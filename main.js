@@ -124,13 +124,13 @@ app.on('window-all-closed', () => {
 });
 
 // Check if electron is in dev or production
-if (isDev) {
-	console.log('Running in development');
-    win.webContents.send('cout', 'Running in development');
-} else if (!isDev) {
-	console.log('Running in production');
-    win.webContents.send('cout', 'Running in production');
-};
+// if (isDev) {
+// 	console.log('Running in development');
+//     win.webContents.send('cout', 'Running in development');
+// } else if (!isDev) {
+// 	console.log('Running in production');
+//     win.webContents.send('cout', 'Running in production');
+// };
 
 // DEPRECATED
 // const findDocumentsFallback = (baseuid) => {
