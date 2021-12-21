@@ -5,7 +5,8 @@
   "scripts": {
     "start": "electron .",
     "is": "node init_installer.js",
-    "build": "npx electron-packager . --platform=win32 --arch=x64 --icon=root/src/images/thumb.ico --overwrite"
+    "build": "npx electron-packager . --platform=win32 --arch=x64 --icon=root/src/images/thumb.ico --overwrite",
+    "package": "electron-installer-windows --src E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/echelon-win32-x64 --dest E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/installer --desc Echelon Application --animation E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/root/src/images/loadinggif.gif"
   },
   "author": "AsfaltoAscari",
   "license": "ISC",
@@ -36,7 +37,7 @@
     "electron-packager": "^15.3.0",
     "electron-winstaller": "^5.0.0"
   },
-  "description": "",
+  "description": "Echelon Application",
   "repository": {
     "type": "git",
     "url": "https://github.com/Asfalto-Ascari-Group/EchelonClient-Release-Stable"

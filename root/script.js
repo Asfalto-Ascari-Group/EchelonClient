@@ -27,6 +27,14 @@ const check = (id, n) => {
     document.getElementById(id).checked = bool;
 };
 
+// Ease functions for localStorage
+const SetLocalItem = (n, c) => {
+    localStorage.setItem(n, c);
+};
+const GetLocalItem = (n) => {
+    return localStorage.getItem(n);
+};
+
 // Game install path listener
 ipcRenderer.on('gamePathStatus', (event, arr) => {
     
@@ -34,7 +42,7 @@ ipcRenderer.on('gamePathStatus', (event, arr) => {
     document.getElementById('pathmount').innerHTML = arr.msg;
     appStorage.setItem('gameInstallDir', arr.msg);
 });
-
+document.getElementById('documentmount').innerHTML = 'D:/Users/BP771/Documents/assettocorsa';
 // Documents path listener
 ipcRenderer.on('documentPathStatus', (event, arr) => {
     
@@ -148,6 +156,10 @@ const confStopButton = () => {
     btnStopText.style.opacity = 0.3;
 };
 
+const rmLastSync = () => {
+    document.getElementById('lastSyncContainer').style.opacity = 0;
+};
+
 // When all content is loaded on client side
 window.addEventListener('DOMContentLoaded', () => {
 
@@ -169,8 +181,19 @@ window.addEventListener('DOMContentLoaded', () => {
     // Configure & update paths from local storage
     let pathmount = appStorage.getItem('gameInstallDir');
     let documentmount = appStorage.getItem('documentsDir');
-    document.getElementById('pathmount').innerHTML = pathmount;
-    document.getElementById('documentmount').innerHTML = documentmount;
+
+    if (!documentmount) {
+        document.getElementById('documentmount').innerHTML = `Please choose the documents path for 'assettocorsa'`;
+    } else if (documentmount) {
+        document.getElementById('documentmount').innerHTML = documentmount;
+    };
+
+    if (!pathmount) {
+        document.getElementById('pathmount').innerHTML = `Please choose the steam folder for 'assettocorsa'`;
+    } else if (pathmount) {
+        document.getElementById('pathmount').innerHTML = pathmount;
+    };
+
     ipcRenderer.send('pathmount', pathmount);
     ipcRenderer.send('documentmount', documentmount);
 
@@ -184,6 +207,9 @@ window.addEventListener('DOMContentLoaded', () => {
     confStopButton();
 
     // Configure last sync date
+    if (GetLocalItem('DateDay') == null || GetLocalItem('DateDay') == 0) {
+        rmLastSync()
+    };
     document.getElementById('lastSyncText').innerHTML = `Last Sync: ${GetLocalItem('DateDay')}<sup>th</sup>   ${GetLocalItem('DateHours')}:${GetLocalItem('DateMinutes')}`;
 
     // Are you developing ? = true/false
@@ -489,17 +515,10 @@ ipcRenderer.on('btnReact', (event, type) => {
         SetLocalItem('DateHours', DateHours);
         SetLocalItem('DateDay', DateDay);
         SetLocalItem('DateMinutes', DateMinutes);
+        document.getElementById('lastSyncContainer').style.opacity = 1;
         document.getElementById('lastSyncText').innerHTML = `Last Sync: ${DateDay}<sup>th</sup>   ${DateHours}:${DateMinutes}`;
     };
 });
-
-const SetLocalItem = (n, c) => {
-    localStorage.setItem(n, c);
-};
-
-const GetLocalItem = (n) => {
-    return localStorage.getItem(n);
-};
 
 // Button start event
 document.getElementById('btnGo').addEventListener('click', () => {

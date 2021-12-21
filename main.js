@@ -209,6 +209,9 @@ function splitWithIndex(p, c) {
     let newPath = ``;
     let bool = false;
 
+    // path[0], 'Documents'
+    log(p, c)
+
     for (item of foo) {
         if (!bool) {
             if (item != c) {
@@ -220,6 +223,7 @@ function splitWithIndex(p, c) {
                 };
             }
             else if (item == c) {
+                log('true')
                 bool = true;
                 newPath = `${newPath}\\${item}`;
             };
@@ -251,9 +255,8 @@ const newGamePath = (path) => {
 };
 
 const newDocumentsPath = (path) => {
-
     try {
-        if (path == undefined) {
+        if (path == undefined || !path) {
             // Empty
             win.webContents.send('notification', {title: 'Empty Documents Path', content: `Please enter an 'assettocorsa' documents path`, type: 'bad', ms: 10000});
         }
@@ -263,7 +266,8 @@ const newDocumentsPath = (path) => {
         }
         else if (path[0].includes('Documents') && path[0].includes('assettocorsa')) {
             // Correct
-            documentsDir = splitWithIndex(path[0], 'Documents');
+            documentsDir = splitWithIndex(path[0], 'assettocorsa');
+            log('d', documentsDir)
         };
     }
     catch (err) {
@@ -293,9 +297,7 @@ ipcMain.on('documentsPathMount', () => {
         properties: ['openDirectory'], 
         defaultPath: `${documentsDir || os.homedir()}`
     });
-
     newDocumentsPath(documentsDirUser);
-
 });
 
 // Fired when the notification bool value has been changed on the renderer
