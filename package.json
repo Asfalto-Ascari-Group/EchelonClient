@@ -15,8 +15,6 @@
     "decompress": "^4.2.1",
     "dns": "^0.2.2",
     "dotenv": "^10.0.0",
-    "drive-tools": "^0.0.20",
-    "drivelist": "^9.2.4",
     "electron-is-dev": "^2.0.0",
     "electron-log": "^4.4.1",
     "encoding-japanese": "^1.0.30",
@@ -24,20 +22,17 @@
     "http": "^0.0.1-security",
     "os": "^0.1.2",
     "performance": "^1.4.0",
-    "public-ip": "^4.0.4",
     "react-animated-ellipsis": "^1.0.0",
     "shell": "^0.5.0",
     "socket.io-client": "^4.1.2",
     "steam-game-path": "^2.0.1",
-    "unzipper": "^0.10.11",
-    "xmldom": "^0.6.0"
+    "unzipper": "^0.10.11"
   },
   "devDependencies": {
     "electron": "^13.1.1",
-    "electron-packager": "^15.3.0",
-    "electron-winstaller": "^5.0.0"
+    "electron-packager": "^15.3.0"
   },
-  "description": "Echelon Application",
+  "description": "Echelon Client",
   "repository": {
     "type": "git",
     "url": "https://github.com/Asfalto-Ascari-Group/EchelonClient-Release-Stable"
