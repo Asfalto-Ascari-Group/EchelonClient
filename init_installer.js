@@ -8,7 +8,7 @@ try {
         outputDirectory: 'E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/installer',
         title: 'Echelon',
         name: 'Echelon',
-        version: '1.1.0',
+        version: '1.0.0',
         description: 'Project Echelon Executable File',
         authors: 'AsfaltoAscari',
         owners: 'Admin_AsfaltoAscari',
@@ -17,7 +17,9 @@ try {
         setupExe: 'EchelonSetup.exe',
         exe: 'echelon.exe'
     });
-    console.log('It worked!');
+    console.log('Creating Installer...');
 } catch (e) {
     console.log(`No dice: ${e.message}`);
 };
+
+console.log('Done! - E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/installer');
