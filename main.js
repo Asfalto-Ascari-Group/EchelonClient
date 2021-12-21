@@ -12,6 +12,7 @@ const os = require('os');
 // This adds a desktop shortcut for some reason
 if(require('electron-squirrel-startup')) return;
 
+// Import env variables
 require('dotenv').config();
 
 // Configure update server
