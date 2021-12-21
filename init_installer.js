@@ -23,7 +23,3 @@ try {
 };
 
 console.log('Done! - E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/installer');
-
-
-
-'electron-installer-windows --src E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/echelon-win32-x64 --dest E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/installer'
