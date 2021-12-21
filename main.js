@@ -10,7 +10,7 @@ const pth = require('path');
 const os = require('os');
 
 // This adds a desktop shortcut for some reason
-// if(require('electron-squirrel-startup')) return;
+if(require('electron-squirrel-startup')) return;
 
 require('dotenv').config();
 
