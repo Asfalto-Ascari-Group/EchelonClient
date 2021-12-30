@@ -6,7 +6,7 @@
     "start": "electron .",
     "is": "node init_installer.js",
     "winstaller": "electron-installer-windows --src E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/echelon-win32-x64 --dest E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/installer --animation E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/root/src/images/installer.gif",
-    "build": "npx electron-packager ./ --platform=win32 --arch=x64 --icon=root/src/images/thumb.ico --overwrite"
+    "build": "npx electron-packager ./ Echelon --platform=win32 --arch=x64 --icon=root/src/images/thumb.ico --overwrite"
   },
   "author": "AsfaltoAscari",
   "license": "ISC",
@@ -21,6 +21,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-winstaller": "^5.0.0",
     "encoding-japanese": "^1.0.30",
+    "exe-icon-extractor": "^1.0.8",
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "is-docker": "^3.0.0",
@@ -37,7 +38,8 @@
   },
   "devDependencies": {
     "electron": "^13.6.3",
-    "electron-packager": "^15.4.0"
+    "electron-packager": "^15.4.0",
+    "electron-wix-msi": "^3.2.0"
   },
   "description": "Echelon Client",
   "repository": {
