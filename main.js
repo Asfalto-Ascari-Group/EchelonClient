@@ -1,4 +1,4 @@
-const { BrowserWindow, app, ipcMain, dialog, Notification } = require('electron');
+const { BrowserWindow, app, ipcMain, dialog, Notification, autoUpdater } = require('electron');
 const { io } = require('socket.io-client');
 const fs = require('fs');
 const { getGamePath } = require('steam-game-path');
@@ -12,18 +12,15 @@ const os = require('os');
 // This adds a desktop shortcut for some reason
 if(require('electron-squirrel-startup')) return;
 
-// Import env variables
-require('dotenv').config();
-
 // Configure update server
-// const server = 'https://github.com/Asfalto-Ascari-Group/EchelonClient/releases';
-// const url = `${server}/update/${process.platform}/${app.getVersion()}`;
-// autoUpdater.setFeedURL({url});
+const server = 'https://update.electronjs.org';
+const url = `${server}/OWNER/REPO/${process.platform}-${process.arch}/${app.getVersion()}`;
+autoUpdater.setFeedURL({url});
 
-// // Check for update every minute
-// setInterval(() => {
-//     autoUpdater.checkForUpdates();
-// }, 60000);
+// Check for update every minute
+setInterval(() => {
+    autoUpdater.checkForUpdates();
+}, 60000);
 
 // // Check for when update is downloaded
 // autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
@@ -42,7 +39,7 @@ require('dotenv').config();
 
 // // Catch autoUpdater errors
 // autoUpdater.on('error', message => {
-//     console.error('There was a problem updating the application');
+//     console.error('There was a problem updating the application.');
 //     console.error(message);
 // });
 

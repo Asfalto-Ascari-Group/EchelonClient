@@ -14,7 +14,18 @@ const main = async () => {
         version: '1.0.0',
         outputDirectory: 'E:\\SoftwareDev\\AA\\src4\\EchelonClient_Installer',
         cultures: 'en-us',
-        
+        features: {
+            autoLaunch: true,
+            autoUpdate: true
+        },
+        ui: {
+            enabled: true,
+            chooseDirectory: true,
+            images: {
+                background: 'E:\\SoftwareDev\\AA\\src4\\EchelonClient-Release-Stable\\Echelon-win32-x64\\resources\\app\\root\\src\\images\\bg.png',
+                banner: 'E:\\SoftwareDev\\AA\\src4\\EchelonClient-Release-Stable\\Echelon-win32-x64\\resources\\app\\root\\src\\images\\McLaren-P11.jpg',
+            }
+        }
     });
 
     // Step 2: Create a .wxs template file
