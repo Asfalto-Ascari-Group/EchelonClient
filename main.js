@@ -20,6 +20,7 @@ autoUpdater.setFeedURL({url});
 // Check for update every minute
 setInterval(() => {
     autoUpdater.checkForUpdates();
+    win.webContents.send('cout', 'check for update loop');
 }, 60000);
 
 // // Check for when update is downloaded

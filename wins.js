@@ -14,6 +14,7 @@ const main = async () => {
         version: '1.0.0',
         outputDirectory: 'E:\\SoftwareDev\\AA\\src4\\EchelonClient_Installer',
         cultures: 'en-us',
+        appIconPath: 'E:\\SoftwareDev\\AA\\src4\\EchelonClient-Release-Stable\\Echelon-win32-x64\\resources\\app\\root\\src\\images\\thumb.ico',
         features: {
             autoLaunch: true,
             autoUpdate: true

@@ -4,8 +4,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "is": "node init_installer.js",
-    "winstaller": "electron-installer-windows --src E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/echelon-win32-x64 --dest E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/installer --animation E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/root/src/images/installer.gif",
+    "winstaller": "electron-installer-windows --src E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/echelon-win32-x64 --dest E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/installer --animation E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/root/src/images/installer.gif --icon E:/SoftwareDev/AA/src4/EchelonClient-Release-Stable/Echelon-win32-x64/resources/app/root/src/images/thumb.ico",
     "build": "npx electron-packager ./ Echelon --platform=win32 --arch=x64 --icon=root/src/images/thumb.ico --overwrite"
   },
   "author": "AsfaltoAscari",
