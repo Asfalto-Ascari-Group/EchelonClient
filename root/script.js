@@ -1,25 +1,25 @@
-const { mainWindow, ipcRenderer, remote, ipcMain, app } = require('electron');
-const ReactAnimatedEllipsis = require('react-animated-ellipsis');
-const appStorage = window.localStorage;
+const { mainWindow, ipcRenderer, remote, ipcMain, app } = require('electron'),
+    ReactAnimatedEllipsis = require('react-animated-ellipsis'),
+    appStorage = window.localStorage;
 
 // @GLOBALS
-const log = console.log.bind(console);
-const modulesArr = ['flSpec', 'gtSpec', 'cSpec'];
-var userModulesArr = [];
-const eventArr = ['eventcontent1', 'eventcontent2'];
-const infoArr = ['infocontent1', 'infocontent2', 'infocontent3'];
-var notisQueue = [];
-var isQueueOpen = true;
-var eventCounter = 0;
-var infoCounter = 0;
-var releaseName;
-var canButtonBeUsed = true;
-var serverState = false;
-var isDownlading = new Boolean();
-isDownloading = false;
-var DateHours;
-var DateMinutes;
-var DateDay;
+const log = console.log.bind(console),
+    modulesArr = ['flSpec', 'gtSpec', 'iSpec'],
+    eventArr = ['eventcontent1', 'eventcontent2'],
+    infoArr = ['infocontent1', 'infocontent2', 'infocontent3'];
+
+var userModulesArr = [],
+    notisQueue = [],
+    isQueueOpen = true,
+    eventCounter = 0,
+    infoCounter = 0,
+    releaseName,
+    canButtonBeUsed = true,
+    serverState = false,
+    isDownlading = false,
+    DateHours,
+    DateMinutes,
+    DateDay;
 
 // Config appStorage entries
 const check = (id, n) => {
@@ -42,37 +42,18 @@ ipcRenderer.on('gamePathStatus', (event, arr) => {
     document.getElementById('pathmount').innerHTML = arr.msg;
     appStorage.setItem('gameInstallDir', arr.msg);
 });
-document.getElementById('documentmount').innerHTML = 'D:/Users/BP771/Documents/assettocorsa';
+
 // Documents path listener
 ipcRenderer.on('documentPathStatus', (event, arr) => {
-    
+
     // Configure path on client
-    document.getElementById('documentmount').innerHTML = arr.msg;
-    appStorage.setItem('documentsDir', arr.msg);
+    document.getElementById('documentmount').innerHTML = arr;
+    appStorage.setItem('documentsDir', arr);
 });
 
 ipcRenderer.on('cout', (event, msg) => {
     log(msg);
 });
-
-// DEPRECATED
-// ipcRenderer.on('getLocalStorage', (event) => {
-//     // Send local storage user choice data to main.js
-//     var array = [];
-
-//     for (const module of modulesArr) {
-//         let value = appStorage.getItem(module);
-//         if (value != null) {
-//             array.push({
-//                 moduleName: module,
-//                 value: value
-//             });
-//         };
-//     };
-
-//     // if (array.length <= 0) {}; -- code on main
-//     ipcMain.send('resLocalStorage', array);
-// });
 
 ipcRenderer.on('downloadProgress', (event, msg) => {
     document.getElementById('demoText').style.display = 'auto';
@@ -80,15 +61,16 @@ ipcRenderer.on('downloadProgress', (event, msg) => {
 });
 
 ipcRenderer.on('downloadDone', (event, msg) => {
-    document.getElementById('demoText2').innerHTML = msg;
     confStopButton();
+    document.getElementById('demoText2').innerHTML = msg;
     document.getElementById('demoText').innerHTML = '';
+    setInterval(() => {
+        document.getElementById('demoText2').innerHTML = '';
+    }, 10000);
 });
 
 ipcRenderer.on('currentInstallPath', (event, path) => {
-    // log('..' + path.split('\\common')[1].replace(/\\/g, '/'));
-    // document.getElementById('demoText2').innerHTML = '..' + path.split('\\common')[1].replace(/\\/g, '/');
-    document.getElementById('demoText2').innerHTML = '...' + path;
+    document.getElementById('demoText2').innerHTML = '..' + path;
 });
 
 // Mount sends path back to ipcMain when user chooses a steam path
@@ -131,7 +113,7 @@ ipcRenderer.on('sendSeriesVersionFin', (event, arr) => {
 
 ipcRenderer.on('serverState', (event, bool) => {
     serverState = bool;
-
+    // log(serverState)
     if (serverState) {
         // change to green
         document.getElementById('statusIcon').innerHTML = '🟢';
@@ -200,7 +182,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Configure checkboxes
     check('cb1', 'flSpec');
     check('cb2', 'gtSpec');
-    check('cb3', 'cSpec');
+    check('cb3', 'iSpec');
     check('notiCbx', 'notifications');
 
     // Configure stop button
@@ -263,7 +245,7 @@ window.addEventListener('DOMContentLoaded', () => {
     ipcRenderer.send('clientLoaded');
 });
 
-function valueParse(elem) {
+const valueParse = (elem) => {
     appStorage.setItem(elem.name, elem.checked);
     ipcRenderer.send('racingSeries', {type: elem.name, value: elem.checked});
 
@@ -276,7 +258,7 @@ function valueParse(elem) {
     };
 };
 
-function clientNotificationChange(elem) {
+const clientNotificationChange = (elem) => {
 
     if (elem.checked) {
         appStorage.setItem('notifications', true);
@@ -288,11 +270,11 @@ function clientNotificationChange(elem) {
     };
 };
 
-function menuFold(x) {
+const menuFold = (x) => {
     x.classList.toggle('change');
 };
 
-function createBrowserWindow(url) {
+const createBrowserWindow = (url) => {
     const remote = require('electron').remote;
     const BrowserWindow = remote.BrowserWindow;
     const win = new BrowserWindow({
@@ -327,7 +309,7 @@ ipcRenderer.on('notification', (event, arr) => {
 });
 
 // Push content of notification to queue array
-function pushNotification(title, content, type, ms) {
+const pushNotification = (title, content, type, ms) =>{
 
     // Push notification to queue array
     notisQueue.push({
@@ -345,19 +327,10 @@ function pushNotification(title, content, type, ms) {
 };
 
 // Create notification
-function createNotification(title, content, type, ms) {
+const createNotification = (title, content, type, ms) => {
 
     // Block container
     isQueueOpen = false;
-    
-    // -- if (indexOf == 0) {};
-    // --   false = show notification
-    // --   true = do not show
-
-    // -- containerBool { @bool };
-    // --   true = empty container
-    // --   false = container in use until debounce called
-
 
     // Configure the notification
     var notification = document.getElementById('notification');
@@ -397,7 +370,7 @@ function createNotification(title, content, type, ms) {
 
 // Animation duration in milliseconds
 var transDuration = 150;
-function settingsSyncFold() {
+const settingsSyncFold = () => {
 
     var topelem = document.getElementById('contentTL');
     var botelem = document.getElementById('subContentTL');
@@ -412,7 +385,7 @@ function settingsSyncFold() {
     botelem.style.opacity = 1;
 };
 
-function settingsSyncFlip() {
+const settingsSyncFlip = () => {
 
     var botelem = document.getElementById('subContentTL');
     var topelem = document.getElementById('contentTL');
@@ -427,7 +400,7 @@ function settingsSyncFlip() {
     topelem.style.opacity = 1;
 };
 
-async function elipAnim() {
+const elipAnim = async () => {
 
     var foo = ['', '.', '..', '...'];
     var ele = document.getElementById('demoText3');
@@ -465,9 +438,9 @@ ipcRenderer.on('uiString', (event, msg) => {
 ipcRenderer.on('btnReact', (event, type) => {
 
     if (type == 'go') {
-        const btnGo = document.getElementById('btnGo');
-        const btnGoTop = document.getElementById('btnGoTop');
-        const btnGoText = document.getElementById('goButtonText');
+        const btnGo = document.getElementById('btnGo'),
+            btnGoTop = document.getElementById('btnGoTop'),
+            btnGoText = document.getElementById('goButtonText');
     
         // Turn the button off
         btnGo.style.pointerEvents = 'none';
@@ -490,9 +463,9 @@ ipcRenderer.on('btnReact', (event, type) => {
 
     }
     else if (type == 'finish') {
-        const btnGo = document.getElementById('btnGo');
-        const btnGoTop = document.getElementById('btnGoTop');
-        const btnGoText = document.getElementById('goButtonText');
+        const btnGo = document.getElementById('btnGo'),
+            btnGoTop = document.getElementById('btnGoTop'),
+            btnGoText = document.getElementById('goButtonText');
     
         // Turn the button off
         btnGo.style.pointerEvents = 'auto';
@@ -520,23 +493,24 @@ ipcRenderer.on('btnReact', (event, type) => {
     };
 });
 
-// Button start event
-document.getElementById('btnGo').addEventListener('click', () => {
-    btnGo();
-});
 const btnGo = () => {
-
     if (canButtonBeUsed) {
         ipcRenderer.send('syncButton', 'start');
     };
 };
-
-document.getElementById('btnStop').addEventListener('click', () => {
-    btnStop();
-});
 const btnStop = () => {
     ipcRenderer.send('syncButton', 'stop');
 };
+
+// Button start event
+document.getElementById('btnGo').addEventListener('click', () => {
+    btnGo();
+});
+
+// Button stop event
+document.getElementById('btnStop').addEventListener('click', () => {
+    btnStop();
+});
 
 ipcRenderer.on('buttonStart', () => {
 
@@ -580,9 +554,9 @@ ipcRenderer.on('buttonStop', () => {
     document.getElementById('demoText3').style.display = 'none';
 
     setTimeout(() => {
-        const btnGo = document.getElementById('btnGo');
-        const btnGoTop = document.getElementById('btnGoTop');
-        const btnGoText = document.getElementById('goButtonText');
+        const btnGo = document.getElementById('btnGo'),
+            btnGoTop = document.getElementById('btnGoTop'),
+            btnGoText = document.getElementById('goButtonText');
     
         // Turn the go button on
         btnGo.style.pointerEvents = 'auto';
@@ -597,7 +571,6 @@ ipcRenderer.on('buttonStop', () => {
         isDownloading = false;
 
     }, 600);
-    
 });
 
 const changeEventSlide = () => {
@@ -609,10 +582,10 @@ const changeEventSlide = () => {
 
     eventCounter++;
 
-    const eventdot1full = document.getElementById('eventdot1full');
-    const eventdot1 = document.getElementById('eventdot1');
-    const eventdot2full = document.getElementById('eventdot2full');
-    const eventdot2 = document.getElementById('eventdot2');
+    const eventdot1full = document.getElementById('eventdot1full'),
+        eventdot1 = document.getElementById('eventdot1'),
+        eventdot2full = document.getElementById('eventdot2full'),
+        eventdot2 = document.getElementById('eventdot2');
 
     if (eventCounter == 1) {
         eventdot1full.style.display = 'none';
@@ -650,10 +623,10 @@ const changeInfoSlide = () => {
     // document.getElementById(infoArr[infoCounter]).style.display = 'none';
     infoCounter++;
 
-    const infodot1full = document.getElementById('infodot1full');
-    const infodot1 = document.getElementById('infodot1');
-    const infodot2full = document.getElementById('infodot2full');
-    const infodot2 = document.getElementById('infodot2');
+    const infodot1full = document.getElementById('infodot1full'),
+        infodot1 = document.getElementById('infodot1'),
+        infodot2full = document.getElementById('infodot2full'),
+        infodot2 = document.getElementById('infodot2');
 
     if (infoCounter == 1) {
         infodot1full.style.display = 'none';

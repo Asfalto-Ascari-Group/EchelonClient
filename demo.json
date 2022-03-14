@@ -1,0 +1,12 @@
+{
+    "response": ["item", "item"], 
+    "setups": {
+        "appsJson": ["item", "item"], 
+        "contentJson": ["item", "item"]
+    }
+}
+
+
+{
+    "item": {"urlpath": "", "moduleType": "", "selector": "", "type": ""}
+}

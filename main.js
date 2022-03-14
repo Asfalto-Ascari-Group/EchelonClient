@@ -1,27 +1,28 @@
-const { BrowserWindow, app, ipcMain, dialog, Notification, autoUpdater } = require('electron');
-const { io } = require('socket.io-client');
-const fs = require('fs');
-const { getGamePath } = require('steam-game-path');
-const isDev = require('electron-is-dev');
-const unzipper = require('unzipper');
-require('update-electron-app')();
-const http = require('http');
-const pth = require('path');
-const os = require('os');
+const { BrowserWindow, app, ipcMain, dialog, Notification, autoUpdater } = require('electron'),
+    { io } = require('socket.io-client'),
+    fs = require('fs'),
+    { getGamePath } = require('steam-game-path'),
+    isDev = require('electron-is-dev'),
+    unzipper = require('unzipper'),
+    http = require('http'),
+    pth = require('path'),
+    os = require('os');
 
-// This adds a desktop shortcut for some reason
-if(require('electron-squirrel-startup')) return;
+// Weirdos
+require('update-electron-app')();
+require('electron-squirrel-startup'); // This one adds a desktop shortcut idfk why
 
 // Configure update server
-const server = 'https://update.electronjs.org';
-const url = `${server}/OWNER/REPO/${process.platform}-${process.arch}/${app.getVersion()}`;
+var server = 'https://update.electronjs.org',
+    url = `${server}/OWNER/REPO/${process.platform}-${process.arch}/${app.getVersion()}`;
 autoUpdater.setFeedURL({url});
 
 // Check for update every minute
-setInterval(() => {
-    autoUpdater.checkForUpdates();
-    win.webContents.send('cout', 'check for update loop');
-}, 60000);
+// DISABLE FOR DEV
+// setInterval(() => {
+//     autoUpdater.checkForUpdates();
+//     win.webContents.send('cout', 'check for update loop');
+// }, 60000);
 
 // // Check for when update is downloaded
 // autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
@@ -45,7 +46,7 @@ setInterval(() => {
 // });
 
 // Define variable connection
-const socket = io(`http://34.69.110.17:4644`, {
+const socket = io(`http://86.2.10.33:4644`, {
     reconnection: true,
     pingTimeout: 1000,
     pingInterval: 1000,
@@ -55,34 +56,36 @@ const socket = io(`http://34.69.110.17:4644`, {
 // During the request phase, the server will send back a socket that leads to the file server to download content
 
 // Global variables
-var log = console.log.bind(console);
-var gameInstallDir;
-var documentsDir;
-var isWindowOn = false;
-var notisChoice = false;
-var canHashMapBeFormatted = false;
-const modulesArr = ['flSpec', 'gtSpec', 'cSpec'];
-var isServerConnected = false;
-var completedModulesArr = [];
-var chosenModules = [];
-var isDownloadStopped = new Boolean();
-isDownloadStopped = false;          
-var moduleCount = 0;
-var filesToDownload = [];
-var isDownloadQueueOpen = true;
-var globalFilesCount = 0;
-var percentTerm = 0;
-var counter = 0;
-var totalPercent = 0;
-var clientLoadProgress = false;
-var mainLoadProgress = false;
+const modulesArr = ['flSpec', 'gtSpec', 'iSpec'];
+
+var log = console.log.bind(console),
+    gameInstallDir,
+    documentsDir,
+    isWindowOn = false,
+    notisChoice = false,
+    canHashMapBeFormatted = false,
+    isServerConnected = false,
+    completedModulesArr = [],
+    chosenModules = [],
+    isDownloadStopped = false,  
+    moduleCount = 0,
+    filesToDownload = [],
+    isDownloadQueueOpen = true,
+    globalFilesCount = 0,
+    percentTerm = 0,
+    counter = 0,
+    totalPercent = 0,
+    clientLoadProgress = false,
+    mainLoadProgress = false;
+
+
 
 // Configure window options
 var win;
 app.whenReady();
 
 // Declare createWindow function
-function createWindow() {
+const createWindow = () => {
     win = new BrowserWindow({
         height: 870,
         width: 1080,
@@ -199,43 +202,39 @@ ipcMain.on('windowLoad', (event, arr) => {
         win.webContents.send('notification', {title: 'Assetto Corsa Could Not Be Found...', content: `Please choose a Steam installation path for 'assettocorsa'`, type: 'bad', ms: 10000});
     };
 
-    // DEPRECATED
-    // if (isGamePathFound) {
-    //     var baseuid = os.homedir().split('\\')[2];
-    //     findDocuments(baseuid, data.game.path[0]);
-    // };
-
     // If server is connected
-    // if (isServerConnected) {
-    //     win.webContents.send('serverState', isServerConnected);
+    if (isServerConnected) {
+        win.webContents.send('serverState', isServerConnected);
 
-    //     win.webContents.send('notification', {
-    //         title: 'Echelon Connected',
-    //         content: `Echelon successfully connected to the server`,
-    //         type: 'good',
-    //         ms: 6000
-    //     });
+        win.webContents.send('notification', {
+            title: 'Echelon Connected',
+            content: `Echelon successfully connected to the server`,
+            type: 'good',
+            ms: 6000
+        });
         
-    // } else if (!isServerConnected) {
-    //     win.webContents.send('serverState', isServerConnected);
+    } else if (!isServerConnected) {
+        win.webContents.send('serverState', isServerConnected);
 
-    //     win.webContents.send('notification', {
-    //         title: 'Echelon Lost Connection',
-    //         content: `Awaiting server reconnection...`,
-    //         type: 'bad',
-    //         ms: 0
-    //     });
+        win.webContents.send('notification', {
+            title: 'Echelon Lost Connection',
+            content: `Awaiting server reconnection...`,
+            type: 'bad',
+            ms: 10000
+        });
 
-    // };
+    };
 
 });
 
 // Listen for path incoming
 ipcMain.on('pathmount', (event, msg) => {
     gameInstallDir = msg;
+    log(gameInstallDir);
 });
 ipcMain.on('documentmount', (event, msg) => {
     documentsDir = msg;
+    log(documentsDir);
 });
 
 // Remove paths past 'assettocorsa'
@@ -302,7 +301,8 @@ const newDocumentsPath = (path) => {
         else if (path[0].includes('Documents') && path[0].includes('assettocorsa')) {
             // Correct
             documentsDir = splitWithIndex(path[0], 'assettocorsa');
-            log('d', documentsDir)
+            // log(documentsDir);
+            win.webContents.send('documentPathStatus', documentsDir);
         };
     }
     catch (err) {
@@ -371,9 +371,8 @@ ipcMain.on('cout', (event, arr) => {
 
 // Request files from server in json format
 ipcMain.on('getCurrent', (event, arr) => {
-    socket.emit('getCurrent', {
-        modules: chosenModules
-    });
+    // Array of user chosen modules => ['flSpec', 'iSpec', 'gtSpec']
+    socket.emit('getCurrent', {modules: chosenModules});
     win.webContents.send('uiString', 'Fetching Files');
     win.webContents.send('btnReact', 'go');
     notisChoice = arr.notis;
@@ -405,8 +404,8 @@ ipcMain.on('syncButton', (event, foo) => {
 
 const checkBeforeDownload = () => {
 
-    // Check if gameInstallDir and documentsInstallDir are correct and present before downloading
-    if (gameInstallDir != undefined || documentsDir != undefined) {
+    // Check if gameInstallDir and documentsInstallDir are present before downloading
+    if (gameInstallDir != undefined && documentsDir != undefined) {
         return true;
     }
     else {
@@ -415,7 +414,7 @@ const checkBeforeDownload = () => {
     };
 };
 
-const DownloadFinished = () => {
+const downloadFinished = () => {
 
     // Send complete state for client UI
     win.webContents.send('btnReact', 'finish');
@@ -445,7 +444,6 @@ const pushFileToQueue = (file) => {
     // Configure variables
     globalFilesCount++;
     percentTerm = 100 / globalFilesCount;
-    // -- 2.99999999999999976
 
     // Check if queue is in use
     if (isDownloadQueueOpen) {
@@ -454,22 +452,23 @@ const pushFileToQueue = (file) => {
 };
 
 const downloadFile = (file) => {
-
+    log(file);
     // Block download queue
     isDownloadQueueOpen = false;
 
     // Download file
     var req = http.get(file.urlpath, (res) => {
-
+    
         // Make a check for module type and selector
         if (file.moduleType == 'setups') {
             log('setups');
-            log(`${documentsDir}\\${file.selector}`);
+            log(`path: ${documentsDir}\\${file.selector}`);
             // let docsPath = fs.createWriteStream(`${documentsDir}\\assettocorsa\\${file.selector}`);
             res.pipe(unzipper.Extract({path: `${documentsDir}\\${file.selector}`}));
         }
         else if (file.moduleType == 'assets') {
             log('assets');
+            log(`path: ${gameInstallDir}\\content\\${file.type}`);
             res.pipe(unzipper.Extract({path: `${gameInstallDir}\\content\\${file.type}`}));
         };
 
@@ -486,12 +485,12 @@ const downloadFile = (file) => {
                 downloadFile(filesToDownload[0]);
             }
             else if (counter == globalFilesCount) {
-                DownloadFinished();
+                downloadFinished();
             };
         });
 
         res.on('error', (error) => {
-            log(error)
+            log(error);
         });
 
     });
@@ -505,8 +504,9 @@ const downloadFile = (file) => {
         // log('response');
         win.webContents.send('uiString', 'Downloading Files');
         if (counter != filesToDownload.length) {
-            let path = `${gameInstallDir}\\${file.filename}`;
-            let newPath = path.split('assettocorsa');
+            var path = `${gameInstallDir}\\${file.filename}`,
+                newPath = path.split('assettocorsa');
+
             win.webContents.send('currentInstallPath', `assettocorsa${newPath[1]}`);
         };
     });
@@ -519,24 +519,28 @@ const downloadFile = (file) => {
 
 // Start download socket response from server
 socket.on('currentServerResponse', (arr) => {
-    let filesAmount = arr.response.length + arr.setups.appsJson.length + arr.setups.contentJson.length;
-    let payload = [];
-    log(documentsDir);
-    log(gameInstallDir);
 
-    for (item of arr.response) {
+    var filesAmount = 0,
+        payload = [];
+
+    for (item of arr) {
         payload.push(item);
+        filesAmount++;
     };
 
-    for (item of arr.setups.appsJson) {
-        payload.push(item);
-    };
+    // for (item of arr.response) {
+    //     payload.push(item);
+    // };
 
-    for (item of arr.setups.contentJson) {
-        payload.push(item);
-    };
+    // for (item of arr.setups.appsJson) {
+    //     payload.push(item);
+    // };
+
+    // for (item of arr.setups.contentJson) {
+    //     payload.push(item);
+    // };
     
-    if (checkBeforeDownload()) {
+    if (true) {
 
         win.webContents.send('uiString', 'Starting Download');
 
@@ -545,42 +549,41 @@ socket.on('currentServerResponse', (arr) => {
             pushFileToQueue(payload[i]);
         };
     };
-
 });
 
 // Check version against server module versions
-socket.on('versionCheck', (serverArr) => {
+// socket.on('versionCheck', (serverArr) => {
 
-    // Get client version
-    var clientVersionFile = fs.readFileSync(pth.join(__dirname, '.\\content\\temp\\clientVersion.json'));
-    const clientVersion = JSON.parse(clientVersionFile.toString());
-    var array = [];
+//     // Get client version
+//     var clientVersionFile = fs.readFileSync(pth.join(__dirname, '.\\content\\temp\\clientVersion.json'));
+//     const clientVersion = JSON.parse(clientVersionFile.toString());
+//     var array = [];
 
-    for (item of modulesArr) {
-        if (serverArr[item].version != clientVersion[item].version) {
+//     for (item of modulesArr) {
+//         if (serverArr[item].version != clientVersion[item].version) {
 
-            moduleName = serverArr[item];
-            array.push(moduleName.type);
+//             moduleName = serverArr[item];
+//             array.push(moduleName.type);
 
-            // Notify user that a racing series is out of date
-            if (chosenModules.includes(moduleName.type) == false) {
-                // win.webContents.send('notification', {title: 'Racing Series Out of Date', content: `Please sync the following: ${array.join()}`, type: 'bad', ms: 10000});
-            };
-            win.webContents.send('sendSeriesVersion', {
-                module: moduleName,
-                bool: 'bad'
-            });
-        } else if (serverArr[item].version == clientVersion[item].version) {
+//             // Notify user that a racing series is out of date
+//             if (chosenModules.includes(moduleName.type) == false) {
+//                 // win.webContents.send('notification', {title: 'Racing Series Out of Date', content: `Please sync the following: ${array.join()}`, type: 'bad', ms: 10000});
+//             };
+//             win.webContents.send('sendSeriesVersion', {
+//                 module: moduleName,
+//                 bool: 'bad'
+//             });
+//         } else if (serverArr[item].version == clientVersion[item].version) {
 
-            // If versions do match then change html content accordingly
-            const id = serverArr[item];
-            win.webContents.send('sendSeriesVersion', {
-                module: id,
-                bool: 'good'
-            });
-        };
-    };
-});
+//             // If versions do match then change html content accordingly
+//             const id = serverArr[item];
+//             win.webContents.send('sendSeriesVersion', {
+//                 module: id,
+//                 bool: 'good'
+//             });
+//         };
+//     };
+// });
 
 // Listen for client load event
 ipcMain.on('clientLoaded', () => {
@@ -598,6 +601,12 @@ socket.on('connect', () => {
     };
 });
 
+// Check for connection manually
+if (socket.connected) {
+    isServerConnected = true;
+    win.webContents.send('serverState', isServerConnected);
+};
+
 // Watch for server connect error
 socket.on('connect_error', (err) => {
     log('Server not available, Retrying...');
@@ -614,3 +623,17 @@ socket.on('connect_error', (err) => {
         win.webContents.send('serverState', isServerConnected);
     };
 });
+
+
+
+// {
+//     "response": [{item}, {item}], 
+//     "setups": {
+//         "appsJson": [{item}, {item}], 
+//         "contentJson": [{item}, {item}]
+//     }
+// }
+
+// {
+//     "item": {"urlpath": "", "moduleType": "", "selector": "", "type": ""}
+// }
