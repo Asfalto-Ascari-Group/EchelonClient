@@ -112,14 +112,10 @@ ipcRenderer.on('sendSeriesVersionFin', (event, arr) => {
 });
 
 ipcRenderer.on('serverState', (event, bool) => {
-    serverState = bool;
-    // log(serverState)
-    if (serverState) {
-        // change to green
+    if (bool === true || bool === 'true') {
         document.getElementById('statusIcon').innerHTML = '🟢';
     }
-    else if (!serverState) {
-        // change to red
+    else if (bool === false || bool === 'false') {
         document.getElementById('statusIcon').innerHTML = '🔴';
     };
 });
@@ -152,8 +148,8 @@ window.addEventListener('DOMContentLoaded', () => {
     for (item of modulesArr) {
 
         // Get item from appStorage (string), if item is 'true', then set boolean to true
-        let p = appStorage.getItem(item);
-        let bool = false;
+        let p = appStorage.getItem(item),
+            bool = false;
         if (p == 'true') {
             bool = true;
         };
@@ -161,8 +157,8 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     // Configure & update paths from local storage
-    let pathmount = appStorage.getItem('gameInstallDir');
-    let documentmount = appStorage.getItem('documentsDir');
+    let pathmount = appStorage.getItem('gameInstallDir'),
+        documentmount = appStorage.getItem('documentsDir');
 
     if (!documentmount) {
         document.getElementById('documentmount').innerHTML = `Please choose the documents path for 'assettocorsa'`;
@@ -275,9 +271,9 @@ const menuFold = (x) => {
 };
 
 const createBrowserWindow = (url) => {
-    const remote = require('electron').remote;
-    const BrowserWindow = remote.BrowserWindow;
-    const win = new BrowserWindow({
+    const remote = require('electron').remote,
+        BrowserWindow = remote.BrowserWindow,
+        win = new BrowserWindow({
         height: 600,
         width: 800,
         icon: '.\\src\\images\\thumb.png',
@@ -372,8 +368,8 @@ const createNotification = (title, content, type, ms) => {
 var transDuration = 150;
 const settingsSyncFold = () => {
 
-    var topelem = document.getElementById('contentTL');
-    var botelem = document.getElementById('subContentTL');
+    var topelem = document.getElementById('contentTL'),
+        botelem = document.getElementById('subContentTL');
 
     topelem.style.transition = `opacity .${transDuration}s`;
     topelem.style.opacity = 0;
@@ -387,8 +383,8 @@ const settingsSyncFold = () => {
 
 const settingsSyncFlip = () => {
 
-    var botelem = document.getElementById('subContentTL');
-    var topelem = document.getElementById('contentTL');
+    var botelem = document.getElementById('subContentTL'),
+        topelem = document.getElementById('contentTL');
 
     botelem.style.transition = `opacity .${transDuration}s`;
     botelem.style.opacity = 0;
@@ -402,10 +398,10 @@ const settingsSyncFlip = () => {
 
 const elipAnim = async () => {
 
-    var foo = ['', '.', '..', '...'];
-    var ele = document.getElementById('demoText3');
-    var eleC = document.getElementById('demoText3Container');
-    var x = 0;
+    var foo = ['', '.', '..', '...'],
+        ele = document.getElementById('demoText3'),
+        eleC = document.getElementById('demoText3Container'),
+        x = 0;
 
     eleC.style.display = 'inline-block';
     ele.style.display = 'inline-block';

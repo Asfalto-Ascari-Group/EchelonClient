@@ -48,9 +48,11 @@ autoUpdater.setFeedURL({url});
 // Define variable connection
 const socket = io(`http://86.2.10.33:4644`, {
     reconnection: true,
-    pingTimeout: 1000,
-    pingInterval: 1000,
-    reconnectionDelayMax: 1000
+    reconnectionAttempts: 3,
+    pingTimeout: 5000,
+    timeout: 5000,
+    pingInterval: 5000,
+    reconnectionDelayMax: 5000
 });
 // Above connection is the socket.io server
 // During the request phase, the server will send back a socket that leads to the file server to download content
@@ -452,7 +454,7 @@ const pushFileToQueue = (file) => {
 };
 
 const downloadFile = (file) => {
-    log(file);
+
     // Block download queue
     isDownloadQueueOpen = false;
 
@@ -461,14 +463,14 @@ const downloadFile = (file) => {
     
         // Make a check for module type and selector
         if (file.moduleType == 'setups') {
-            log('setups');
-            log(`path: ${documentsDir}\\${file.selector}`);
+            // log('setups');
+            // log(`path: ${documentsDir}\\${file.selector}`);
             // let docsPath = fs.createWriteStream(`${documentsDir}\\assettocorsa\\${file.selector}`);
             res.pipe(unzipper.Extract({path: `${documentsDir}\\${file.selector}`}));
         }
         else if (file.moduleType == 'assets') {
-            log('assets');
-            log(`path: ${gameInstallDir}\\content\\${file.type}`);
+            // log('assets');
+            // log(`path: ${gameInstallDir}\\content\\${file.type}`);
             res.pipe(unzipper.Extract({path: `${gameInstallDir}\\content\\${file.type}`}));
         };
 
@@ -593,13 +595,21 @@ ipcMain.on('clientLoaded', () => {
 // Watch for server connection event
 socket.on('connect', () => {
     log('Connected to Server');
-    if (isWindowOn) {
-
-        isDownloadStopped = false;
-        isServerConnected = true;
-        win.webContents.send('serverState', isServerConnected);
-    };
+    isDownloadStopped = false;
+    isServerConnected = true;
+    win.webContents.send('serverState', true);
 });
+
+// Fallback if connection event does not fire properly before DOM content is loaded
+// socket.on('connectFallback', (bool) => {
+//     log('Connected to Server');
+//     if (isWindowOn) {
+
+//         isDownloadStopped = false;
+//         isServerConnected = true;
+//         win.webContents.send('serverState', isServerConnected);
+//     };
+// });
 
 // Check for connection manually
 if (socket.connected) {
@@ -615,7 +625,7 @@ socket.on('connect_error', (err) => {
             title: 'Echelon Lost Connection',
             content: `Awaiting server reconnection...`,
             type: 'bad',
-            ms: 10000
+            ms: 5000
         });
 
         isDownloadStopped = true;
@@ -623,17 +633,3 @@ socket.on('connect_error', (err) => {
         win.webContents.send('serverState', isServerConnected);
     };
 });
-
-
-
-// {
-//     "response": [{item}, {item}], 
-//     "setups": {
-//         "appsJson": [{item}, {item}], 
-//         "contentJson": [{item}, {item}]
-//     }
-// }
-
-// {
-//     "item": {"urlpath": "", "moduleType": "", "selector": "", "type": ""}
-// }
