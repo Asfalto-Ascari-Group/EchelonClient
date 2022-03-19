@@ -10,12 +10,12 @@ const { BrowserWindow, app, ipcMain, dialog, Notification, autoUpdater, shell } 
 
 // Weirdos
 require('update-electron-app')();
-require('electron-squirrel-startup'); // This one adds a desktop shortcut idfk why
+// require('electron-squirrel-startup'); // This one adds a desktop shortcut idfk why
 
 // Configure update server
-var server = 'https://update.electronjs.org',
-    url = `${server}/OWNER/REPO/${process.platform}-${process.arch}/${app.getVersion()}`;
-autoUpdater.setFeedURL({url});
+// var server = 'https://update.electronjs.org',
+//     url = `${server}/OWNER/REPO/${process.platform}-${process.arch}/${app.getVersion()}`;
+// autoUpdater.setFeedURL({url});
 
 // Check for update every minute
 // DISABLE FOR DEV
@@ -46,7 +46,7 @@ autoUpdater.setFeedURL({url});
 // });
 
 // Define variable connection
-const socket = io(`http://86.2.10.33:4644`, {
+const socket = io(`http://echelon.asfaltoascari.com:2101`, {
     reconnection: true,
     reconnectionAttempts: 3,
     pingTimeout: 5000,
