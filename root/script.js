@@ -521,24 +521,24 @@ ipcRenderer.on('buttonStart', () => {
     isDownloading = true;
 
     // Loop through appStorage and send module key&value pairs to ipcMain
-    var array = [];
+    var modules = [];
     for (var keyName in appStorage) {
         var item = appStorage.getItem(keyName);
         if (item != null) {
             if (modulesArr.includes(keyName)) {
                 if (item == 'true') {
-                    array.push(keyName);
+                    modules.push(keyName);
                 };
             };
         };
     };
 
     // Check if series has been selected initially
-    if (array.length == 0) {
+    if (modules.length == 0) {
         pushNotification('Invalid Series Selection', 'Please choose a racing series to synchronise', 'bad', 10000)
     }
-    else if (array.length != 0) {
-        ipcRenderer.send('getCurrent', {arr: array, notis: appStorage.getItem('notifications')});
+    else if (modules.length != 0) {
+        ipcRenderer.send('getCurrent', {arr: modules, notis: appStorage.getItem('notifications')});
     };
 });
 

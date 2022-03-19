@@ -530,14 +530,11 @@ socket.on('currentServerResponse', (arr) => {
         filesAmount++;
     };
     
-    if (true) {
+    win.webContents.send('uiString', 'Starting Download');
 
-        win.webContents.send('uiString', 'Starting Download');
-
-        // Download each file seperatley
-        for (let i=0; i < filesAmount; i++) {
-            pushFileToQueue(payload[i]);
-        };
+    // Download each file seperatley
+    for (let i=0; i < filesAmount; i++) {
+        pushFileToQueue(payload[i]);
     };
 });
 
