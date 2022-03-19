@@ -1,5 +1,4 @@
 const { mainWindow, ipcRenderer, remote, ipcMain, app } = require('electron'),
-    ReactAnimatedEllipsis = require('react-animated-ellipsis'),
     appStorage = window.localStorage;
 
 // @GLOBALS
@@ -194,11 +193,12 @@ window.addEventListener('DOMContentLoaded', () => {
     // -- true = shows content that is NOT in the stable release
     const devBool = false;
     if (!devBool) {
+
         // -- Hide dev content
         document.getElementById('eventcontent1').style.display = 'none';
-        document.getElementById('nextArrowMid').style.pointerEvents = 'none';
-        document.getElementById('eventdot1').style.pointerEvents = 'none';
-        document.getElementById('eventdot2').style.pointerEvents = 'none';
+        document.getElementById('nextArrowMid').style.pointerEvents = 'auto';
+        document.getElementById('eventdot1').style.pointerEvents = 'auto';
+        document.getElementById('eventdot2').style.pointerEvents = 'auto';
 
         document.getElementById('memberinfoContainer').style.display = 'none';
         document.getElementById('settingsCogProfile').style.display = 'none';
@@ -214,16 +214,17 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('eventdot2').style.display = 'none';
         document.getElementById('eventdot2full').style.display = 'none';
 
-        // remove this to see series versions
+        // Remove this to see series versions
         document.getElementById('seriesVersionsContainer').style.display = 'none';
         document.getElementById('seriesNotification').style.display = 'none';
         document.getElementById('menuContainer').style.display = 'none';
 
         // -- Show release content
-        document.getElementById('devEventContent').style.display = 'block';
-        document.getElementById('cellHead2').style.marginTop = '-110px';
+        document.getElementById('devEventContent').style.display = 'inline-block';
+        document.getElementById('devEventContent').style.marginTop = '5px';
     }
     else if (devBool) {
+
         // -- Hide release content
         document.getElementById('devEventContent').style.display = 'none';
         document.getElementById('devMemberContent').style.display = 'none';
@@ -291,11 +292,10 @@ const createBrowserWindow = (url) => {
 
 // Watch for social links click
 document.getElementById('discordClick').addEventListener('click', () => {
-    // createBrowserWindow('https://discord.gg/GvB7k7kp7g');
-    require("shell").openExternal("https://discord.gg/GvB7k7kp7g")
+    ipcRenderer.send('openUrl', 'https://discord.gg/GvB7k7kp7g');
 });
 document.getElementById('githubClick').addEventListener('click', () => {
-    createBrowserWindow('https://github.com/Asfalto-Ascari-Group/EchelonClient-Release-Stable/releases');
+    ipcRenderer.send('https://github.com/Asfalto-Ascari-Group/EchelonClient');
 });
 
 // Listen for notification event from main

@@ -1,4 +1,4 @@
-const { BrowserWindow, app, ipcMain, dialog, Notification, autoUpdater } = require('electron'),
+const { BrowserWindow, app, ipcMain, dialog, Notification, autoUpdater, shell } = require('electron'),
     { io } = require('socket.io-client'),
     fs = require('fs'),
     { getGamePath } = require('steam-game-path'),
@@ -232,11 +232,11 @@ ipcMain.on('windowLoad', (event, arr) => {
 // Listen for path incoming
 ipcMain.on('pathmount', (event, msg) => {
     gameInstallDir = msg;
-    log(gameInstallDir);
+    // log(gameInstallDir);
 });
 ipcMain.on('documentmount', (event, msg) => {
     documentsDir = msg;
-    log(documentsDir);
+    // log(documentsDir);
 });
 
 // Remove paths past 'assettocorsa'
@@ -529,18 +529,6 @@ socket.on('currentServerResponse', (arr) => {
         payload.push(item);
         filesAmount++;
     };
-
-    // for (item of arr.response) {
-    //     payload.push(item);
-    // };
-
-    // for (item of arr.setups.appsJson) {
-    //     payload.push(item);
-    // };
-
-    // for (item of arr.setups.contentJson) {
-    //     payload.push(item);
-    // };
     
     if (true) {
 
@@ -586,6 +574,11 @@ socket.on('currentServerResponse', (arr) => {
 //         };
 //     };
 // });
+
+// Listen for events on social buttons
+ipcMain.on('openUrl', (e, url) => {
+    shell.openPath(url);
+});
 
 // Listen for client load event
 ipcMain.on('clientLoaded', () => {

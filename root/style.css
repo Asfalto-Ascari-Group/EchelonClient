@@ -5,6 +5,9 @@ body {
 
     -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
     animation: fadein 2s;
+
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 @keyframes fadein {
@@ -146,7 +149,7 @@ html {
 
 #dateHolders {
     margin-top: -100px;
-    border: solid 1px black;
+    /* border: solid 1px black; */
     width: fit-content;
 }
 
@@ -366,40 +369,27 @@ html {
 /* - */
 
 #discordIcon {
-    height: auto;
-    width: 40px;
-    -webkit-app-region: no-drag;
+    width: 45px;
     margin-left: 100px;
     margin-top: 25px;
     opacity: 1;
-    transition: .2s opacity ease-in-out;
+    transition: .1s opacity ease-in-out;
 }
 
 #discordIcon:hover {
-    opacity: .6;
-}
-
-#discordClick {
-    position: inline-block;
+    opacity: 0.7;
 }
 
 #githubIcon {
-    height: auto;
-    width: 40px;
-    -webkit-app-region: no-drag;
+    width: 45px;
     margin-left: 100px;
     margin-top: 25px;
     opacity: 1;
-    transition: .2s opacity ease-in-out;
+    transition: .1s opacity ease-in-out;
 }
 
 #githubIcon:hover {
-    opacity: .6;
-}
-
-#githubClick {
-    position: inline-block;
-    display: none;
+    opacity: 0.7;
 }
 
 /* - */
